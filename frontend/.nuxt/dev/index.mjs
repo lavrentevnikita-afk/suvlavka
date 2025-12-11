@@ -1,41 +1,41 @@
 import process from 'node:process';globalThis._importMeta_={url:import.meta.url,env:process.env};import { tmpdir } from 'node:os';
+import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseStatus, setResponseHeader, send, getRequestHeaders, getRequestURL, getResponseHeader, setResponseHeaders, appendResponseHeader, removeResponseHeader, createError, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, readBody, getQuery as getQuery$1, getResponseStatusText } from 'file:///app/node_modules/h3/dist/index.mjs';
 import { Server } from 'node:http';
 import { resolve, dirname, join } from 'node:path';
 import nodeCrypto from 'node:crypto';
 import { parentPort, threadId } from 'node:worker_threads';
-import { defineEventHandler, handleCacheHeaders, splitCookiesString, createEvent, fetchWithEvent, isEvent, eventHandler, setHeaders, sendRedirect, proxyRequest, getRequestHeader, setResponseStatus, setResponseHeader, send, getRequestHeaders, getRequestURL, getResponseHeader, setResponseHeaders, appendResponseHeader, removeResponseHeader, createError, createApp, createRouter as createRouter$1, toNodeListener, lazyEventHandler, getResponseStatus, getRouterParam, readBody, getQuery as getQuery$1, getResponseStatusText } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/h3/dist/index.mjs';
-import { getRequestDependencies, getPreloadLinks, getPrefetchLinks, createRenderer } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/vue-bundle-renderer/dist/runtime.mjs';
-import { stringify, uneval } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/devalue/index.js';
-import destr from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/destr/dist/index.mjs';
-import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/ufo/dist/index.mjs';
-import { renderToString } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/vue/server-renderer/index.mjs';
-import { propsToString, renderSSRHead } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/@unhead/ssr/dist/index.mjs';
-import { createServerHead as createServerHead$1, CapoPlugin } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/unhead/dist/index.mjs';
-import { klona } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/klona/dist/index.mjs';
-import defu, { defuFn } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/defu/dist/defu.mjs';
-import { snakeCase } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/scule/dist/index.mjs';
-import { createHooks } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/hookable/dist/index.mjs';
-import { createFetch, Headers as Headers$1 } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/ofetch/dist/node.mjs';
-import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/node-mock-http/dist/index.mjs';
-import { createStorage, prefixStorage } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/unstorage/dist/index.mjs';
-import unstorage_47drivers_47fs from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/unstorage/drivers/fs.mjs';
-import { digest } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/ohash/dist/index.mjs';
-import { toRouteMatcher, createRouter } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/radix3/dist/index.mjs';
+import { getRequestDependencies, getPreloadLinks, getPrefetchLinks, createRenderer } from 'file:///app/node_modules/vue-bundle-renderer/dist/runtime.mjs';
+import { stringify, uneval } from 'file:///app/node_modules/devalue/index.js';
+import destr from 'file:///app/node_modules/destr/dist/index.mjs';
+import { parseURL, withoutBase, joinURL, getQuery, withQuery, withTrailingSlash, decodePath, withLeadingSlash, withoutTrailingSlash, joinRelativeURL } from 'file:///app/node_modules/ufo/dist/index.mjs';
+import { renderToString } from 'file:///app/node_modules/vue/server-renderer/index.mjs';
+import { propsToString, renderSSRHead } from 'file:///app/node_modules/@unhead/ssr/dist/index.mjs';
+import { createHooks } from 'file:///app/node_modules/hookable/dist/index.mjs';
+import { createFetch, Headers as Headers$1 } from 'file:///app/node_modules/ofetch/dist/node.mjs';
+import { fetchNodeRequestHandler, callNodeRequestHandler } from 'file:///app/node_modules/node-mock-http/dist/index.mjs';
+import { createStorage, prefixStorage } from 'file:///app/node_modules/unstorage/dist/index.mjs';
+import unstorage_47drivers_47fs from 'file:///app/node_modules/unstorage/drivers/fs.mjs';
+import { digest } from 'file:///app/node_modules/ohash/dist/index.mjs';
+import { klona } from 'file:///app/node_modules/klona/dist/index.mjs';
+import defu, { defuFn } from 'file:///app/node_modules/defu/dist/defu.mjs';
+import { snakeCase } from 'file:///app/node_modules/scule/dist/index.mjs';
+import { getContext } from 'file:///app/node_modules/unctx/dist/index.mjs';
+import { toRouteMatcher, createRouter } from 'file:///app/node_modules/radix3/dist/index.mjs';
 import { readFile } from 'node:fs/promises';
-import consola, { consola as consola$1 } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/consola/dist/index.mjs';
-import { ErrorParser } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/youch-core/build/index.js';
-import { Youch } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/youch/build/index.js';
-import { SourceMapConsumer } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/source-map/source-map.js';
+import consola, { consola as consola$1 } from 'file:///app/node_modules/consola/dist/index.mjs';
+import { ErrorParser } from 'file:///app/node_modules/youch-core/build/index.js';
+import { Youch } from 'file:///app/node_modules/youch/build/index.js';
+import { SourceMapConsumer } from 'file:///app/node_modules/source-map/source-map.js';
 import { AsyncLocalStorage } from 'node:async_hooks';
-import { getContext } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/unctx/dist/index.mjs';
-import { captureRawStackTrace, parseRawStackTrace } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/errx/dist/index.js';
-import { isVNode, unref, version } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/vue/index.mjs';
+import { captureRawStackTrace, parseRawStackTrace } from 'file:///app/node_modules/errx/dist/index.js';
+import { isVNode, unref, version } from 'file:///app/node_modules/vue/index.mjs';
 import { promises } from 'node:fs';
 import { fileURLToPath } from 'node:url';
-import { dirname as dirname$1, resolve as resolve$1 } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/pathe/dist/index.mjs';
-import { defineHeadPlugin } from 'file://C:/Users/Nikita/Desktop/suvlavka/frontend/node_modules/@unhead/shared/dist/index.mjs';
+import { dirname as dirname$1, resolve as resolve$1 } from 'file:///app/node_modules/pathe/dist/index.mjs';
+import { createServerHead as createServerHead$1, CapoPlugin } from 'file:///app/node_modules/unhead/dist/index.mjs';
+import { defineHeadPlugin } from 'file:///app/node_modules/@unhead/shared/dist/index.mjs';
 
-const serverAssets = [{"baseName":"server","dir":"C:/Users/Nikita/Desktop/suvlavka/frontend/server/assets"}];
+const serverAssets = [{"baseName":"server","dir":"/app/server/assets"}];
 
 const assets$1 = createStorage();
 
@@ -47,11 +47,11 @@ const storage = createStorage({});
 
 storage.mount('/assets', assets$1);
 
-storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"C:/Users/Nikita/Desktop/suvlavka/frontend"}));
-storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"C:/Users/Nikita/Desktop/suvlavka/frontend/server"}));
-storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"C:/Users/Nikita/Desktop/suvlavka/frontend/.nuxt"}));
-storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"C:/Users/Nikita/Desktop/suvlavka/frontend/.nuxt/cache"}));
-storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"C:/Users/Nikita/Desktop/suvlavka/frontend/.data/kv"}));
+storage.mount('root', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/app"}));
+storage.mount('src', unstorage_47drivers_47fs({"driver":"fs","readOnly":true,"base":"/app/server"}));
+storage.mount('build', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/app/.nuxt"}));
+storage.mount('cache', unstorage_47drivers_47fs({"driver":"fs","readOnly":false,"base":"/app/.nuxt/cache"}));
+storage.mount('data', unstorage_47drivers_47fs({"driver":"fs","base":"/app/.data/kv"}));
 
 function useStorage(base = "") {
   return base ? prefixStorage(storage, base) : storage;
@@ -647,7 +647,7 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {
-    "apiBaseUrl": "http://localhost:4000",
+    "apiBaseUrl": "http://localhost:5000",
     "appName": "Souvenir Shop",
     "pwaEnabled": true
   }
@@ -694,6 +694,11 @@ new Proxy(/* @__PURE__ */ Object.create(null), {
     }
     return void 0;
   }
+});
+
+getContext("nitro-app", {
+  asyncContext: false,
+  AsyncLocalStorage: void 0
 });
 
 const config = useRuntimeConfig();
@@ -1039,13 +1044,13 @@ if (!window.__NUXT_DEVTOOLS_TIME_METRIC__) {
 window.__NUXT_DEVTOOLS_TIME_METRIC__.appInit = Date.now()
 `;
 
-const _Xfpe5focPlmgqsy2df_ZLRv4Mt5VLnpOT43pLKB9o = (function(nitro) {
+const _FMnHxsRb1XnhSkgrcxwDEP1elfSPjrP7Wr27yXkb3Aw = (function(nitro) {
   nitro.hooks.hook("render:html", (htmlContext) => {
     htmlContext.head.push(`<script>${script}<\/script>`);
   });
 });
 
-const rootDir = "C:/Users/Nikita/Desktop/suvlavka/frontend";
+const rootDir = "/app";
 
 const appHead = {"meta":[{"charset":"utf-8"},{"name":"viewport","content":"width=device-width, initial-scale=1"}],"link":[],"style":[],"script":[],"noscript":[],"title":"Souvenir Shop"};
 
@@ -1064,7 +1069,7 @@ const devReducers = {
   URL: (data) => data instanceof URL ? data.toString() : void 0
 };
 const asyncContext = getContext("nuxt-dev", { asyncContext: true, AsyncLocalStorage });
-const _UALth5WROKVTueezo_jx7uXAUFbCZK2Pj37OGF_inOY = (nitroApp) => {
+const _eatWhQj7AmXOqcvOZRJh0LlT_NLhqFNsryt2uhcmmTM = (nitroApp) => {
   const handler = nitroApp.h3App.handler;
   nitroApp.h3App.handler = (event) => {
     return asyncContext.callAsync({ logs: [], event }, () => handler(event));
@@ -1133,23 +1138,23 @@ function onConsoleLog(callback) {
 }
 
 const plugins = [
-  _Xfpe5focPlmgqsy2df_ZLRv4Mt5VLnpOT43pLKB9o,
-_UALth5WROKVTueezo_jx7uXAUFbCZK2Pj37OGF_inOY
+  _FMnHxsRb1XnhSkgrcxwDEP1elfSPjrP7Wr27yXkb3Aw,
+_eatWhQj7AmXOqcvOZRJh0LlT_NLhqFNsryt2uhcmmTM
 ];
 
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"121ca-P2AMAYz6/+xxWTWMNEnf08Y8iRQ\"",
-    "mtime": "2025-12-09T17:23:28.237Z",
-    "size": 74186,
+    "etag": "\"11e83-j5Ib/qzv0XlPrVyop1ZlgSAA1YU\"",
+    "mtime": "2025-12-11T06:30:46.385Z",
+    "size": 73347,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
-    "etag": "\"45484-fOVkvhhSLq33V/R4ev2bpASi56E\"",
-    "mtime": "2025-12-09T17:23:28.229Z",
-    "size": 283780,
+    "etag": "\"4552b-QHKe5RWzh/gyXg/Hdomhs0jYJws\"",
+    "mtime": "2025-12-11T06:30:46.389Z",
+    "size": 283947,
     "path": "index.mjs.map"
   }
 };
@@ -1177,7 +1182,7 @@ function getAsset (id) {
 
 const METHODS = /* @__PURE__ */ new Set(["HEAD", "GET"]);
 const EncodingMap = { gzip: ".gz", br: ".br" };
-const _f_dMhA = eventHandler((event) => {
+const _oStzCE = eventHandler((event) => {
   if (event.method && !METHODS.has(event.method)) {
     return;
   }
@@ -1241,12 +1246,12 @@ const _f_dMhA = eventHandler((event) => {
   return readAsset(id);
 });
 
-const _lazy_Lt5Zcm = () => Promise.resolve().then(function () { return renderer$1; });
+const _lazy_1_c8qO = () => Promise.resolve().then(function () { return renderer$1; });
 
 const handlers = [
-  { route: '', handler: _f_dMhA, lazy: false, middleware: true, method: undefined },
-  { route: '/__nuxt_error', handler: _lazy_Lt5Zcm, lazy: true, middleware: false, method: undefined },
-  { route: '/**', handler: _lazy_Lt5Zcm, lazy: true, middleware: false, method: undefined }
+  { route: '', handler: _oStzCE, lazy: false, middleware: true, method: undefined },
+  { route: '/__nuxt_error', handler: _lazy_1_c8qO, lazy: true, middleware: false, method: undefined },
+  { route: '/**', handler: _lazy_1_c8qO, lazy: true, middleware: false, method: undefined }
 ];
 
 function createNitroApp() {
@@ -1640,8 +1645,8 @@ function publicAssetsURL(...path) {
 
 globalThis.__buildAssetsURL = buildAssetsURL;
 globalThis.__publicAssetsURL = publicAssetsURL;
-const getClientManifest = () => import('file://C:/Users/Nikita/Desktop/suvlavka/frontend/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
-const getServerEntry = () => import('file://C:/Users/Nikita/Desktop/suvlavka/frontend/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
+const getClientManifest = () => import('file:///app/.nuxt/dist/server/client.manifest.mjs').then((r) => r.default || r).then((r) => typeof r === "function" ? r() : r);
+const getServerEntry = () => import('file:///app/.nuxt/dist/server/server.mjs').then((r) => r.default || r);
 const getSSRStyles = lazyCachedFunction(() => Promise.resolve().then(function () { return styles$1; }).then((r) => r.default || r));
 const getSSRRenderer = lazyCachedFunction(async () => {
   const manifest = await getClientManifest();

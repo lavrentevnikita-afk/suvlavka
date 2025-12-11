@@ -1,0 +1,1 @@
+import{_ as t,c,a as s,o}from"./Bf3esXos.js";const a={},r={class:"space-y-2"};function n(l,e){return o(),c("section",r,[...e[0]||(e[0]=[s("h1",{class:"text-xl font-semibold"},"Корзина",-1),s("p",{class:"text-sm text-gray-600"}," Здесь будет реализация корзины. Пока это страница-заглушка. ",-1)])])}const f=t(a,[["render",n]]);export{f as default};

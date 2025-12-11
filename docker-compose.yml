@@ -4,41 +4,47 @@ services:
   backend:
     build: ./backend
     command: npm run start:dev
+    working_dir: /app
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+      POSTGRES_USER: ${POSTGRES_USER:-souvenir}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-souvenir}
+      POSTGRES_DB: ${POSTGRES_DB:-souvenir}
+      PORT: 4000
     ports:
-      - "4000:4000"
+      - "5000:4000"
     volumes:
       - ./backend:/app
+      - /app/node_modules
     depends_on:
       - db
-      - redis
 
   frontend:
     build: ./frontend
-    command: npm run dev
+    command: npm run dev -- --port 3000 --host 0.0.0.0
+    working_dir: /app
+    environment:
+      NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-http://localhost:5000}
     ports:
       - "3000:3000"
     volumes:
       - ./frontend:/app
-    environment:
-      - NUXT_PUBLIC_API_BASE_URL=http://localhost:4000
+      - /app/node_modules
+    depends_on:
+      - backend
 
   db:
     image: postgres:16
     restart: unless-stopped
     environment:
-      POSTGRES_USER: souvenir
-      POSTGRES_PASSWORD: souvenir
-      POSTGRES_DB: souvenir
+      POSTGRES_USER: ${POSTGRES_USER:-souvenir}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-souvenir}
+      POSTGRES_DB: ${POSTGRES_DB:-souvenir}
     ports:
       - "5432:5432"
     volumes:
       - db_data:/var/lib/postgresql/data
-
-  redis:
-    image: redis:7
-    restart: unless-stopped
-    ports:
-      - "6379:6379"
 
 volumes:
   db_data:
