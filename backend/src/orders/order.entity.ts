@@ -1,9 +1,9 @@
 import { Column, Entity, PrimaryGeneratedColumn } from 'typeorm'
 
-interface OrderItemRecord {
+export interface OrderItemRecord {
   productId: number
   quantity: number
-  price: number
+  price: string
   name: string
 }
 
@@ -15,17 +15,8 @@ export class Order {
   @Column()
   customerName!: string
 
-  @Column()
-  phone!: string
-
-  @Column({
-    type: 'varchar',   // <--- ВАЖНО: ЯВНО УКАЗАН ТИП
-    length: 255,
-    nullable: true,
-  })
-  
-  @Column()
-  email: string  
+  @Column({ length: 255 })
+  email!: string
 
   @Column()
   address!: string

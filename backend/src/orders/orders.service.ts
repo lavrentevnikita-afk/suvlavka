@@ -5,7 +5,7 @@ import {
 } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
 import { In, Repository } from 'typeorm'
-import { Order } from './order.entity'
+import { Order, OrderItemRecord } from './order.entity'
 import { CreateOrderDto } from './dto'
 import { Product } from '../catalog/product.entity'
 
@@ -24,6 +24,7 @@ export class OrdersService {
     }
 
     const productIds = dto.items.map((i) => i.productId)
+
     const products = await this.productsRepository.find({
       where: { id: In(productIds) },
     })
@@ -31,66 +32,58 @@ export class OrdersService {
     if (products.length !== productIds.length) {
       const foundIds = new Set(products.map((p) => p.id))
       const missing = productIds.filter((id) => !foundIds.has(id))
-      throw new BadRequestException(
-        `Some products were not found: ${missing.join(', ')}`,
+      throw new NotFoundException(
+        `Products not found: ${missing.join(', ')}`,
       )
     }
 
-    const productMap = new Map(products.map((p) => [p.id, p]))
-
-    const items = dto.items.map((i) => {
-      const product = productMap.get(i.productId)
+    const items: OrderItemRecord[] = dto.items.map((item) => {
+      const product = products.find((p) => p.id === item.productId)
       if (!product) {
-        throw new BadRequestException(`Product ${i.productId} not found`)
+        // На всякий случай, хотя выше уже есть проверка
+        throw new NotFoundException(
+          `Product with id ${item.productId} not found`,
+        )
       }
 
       return {
         productId: product.id,
-        quantity: i.quantity,
-        price: Number(product.price),
+        quantity: item.quantity,
+        price: String((product as any).price), // приводим к строке
         name: product.name,
       }
     })
 
-    const totalPriceNumber = items.reduce(
-      (sum, item) => sum + item.price * item.quantity,
-      0,
-    )
-
-    const normalizedEmail =
-      dto.email && dto.email.trim().length > 0
-        ? dto.email.trim().toLowerCase()
-        : null
+    const totalPriceNumber = items.reduce((sum, item) => {
+      return sum + Number(item.price) * item.quantity
+    }, 0)
 
     const order = this.ordersRepository.create({
-      customerName: dto.customerName,
-      phone: dto.phone,
-      email: normalizedEmail,
+      customerName: dto.customerName,   // <-- ИСПОЛЬЗУЕМ customerName ИЗ DTO
+      email: dto.email,
       address: dto.address,
       comment: dto.comment ?? null,
-      items,
       totalPrice: totalPriceNumber.toFixed(2),
       status: 'new',
+      items,
     })
 
     return this.ordersRepository.save(order)
   }
 
-  async getOne(id: number): Promise<Order> {
-    const order = await this.ordersRepository.findOne({ where: { id } })
-    if (!order) {
-      throw new NotFoundException('Order not found')
-    }
-    return order
+  async findAll(): Promise<Order[]> {
+    return this.ordersRepository.find({
+      order: { createdAt: 'DESC' },
+    })
   }
 
-  async getForEmail(email: string): Promise<Order[]> {
-    const normalizedEmail = email.trim().toLowerCase()
+  async findOne(id: number): Promise<Order> {
+    const order = await this.ordersRepository.findOne({ where: { id } })
 
-    return this.ordersRepository
-      .createQueryBuilder('order')
-      .where('LOWER(order.email) = :email', { email: normalizedEmail })
-      .orderBy('order.createdAt', 'DESC')
-      .getMany()
+    if (!order) {
+      throw new NotFoundException(`Order with id ${id} not found`)
+    }
+
+    return order
   }
 }

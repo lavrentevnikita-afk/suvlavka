@@ -2,44 +2,43 @@ import {
   IsArray,
   IsEmail,
   IsInt,
-  IsNotEmpty,
   IsOptional,
-  IsPositive,
+  IsString,
+  Min,
   MinLength,
   ValidateNested,
 } from 'class-validator'
 import { Type } from 'class-transformer'
 
-export class OrderItemDto {
+export class CreateOrderItemDto {
   @IsInt()
-  @IsPositive()
+  @Type(() => Number)
   productId!: number
 
   @IsInt()
-  @IsPositive()
+  @Min(1)
+  @Type(() => Number)
   quantity!: number
 }
 
 export class CreateOrderDto {
-  @IsNotEmpty()
+  @IsString()
   @MinLength(2)
-  customerName!: string
+  customerName!: string  // <-- ИМЯ КЛИЕНТА ТУТ
 
-  @IsNotEmpty()
-  phone!: string
-
-  @IsOptional()
   @IsEmail()
-  email: string
+  email!: string
 
-  @IsNotEmpty()
+  @IsString()
+  @MinLength(5)
   address!: string
 
   @IsOptional()
+  @IsString()
   comment?: string
 
   @IsArray()
   @ValidateNested({ each: true })
-  @Type(() => OrderItemDto)
-  items!: OrderItemDto[]
+  @Type(() => CreateOrderItemDto)
+  items!: CreateOrderItemDto[]
 }
