@@ -9,12 +9,17 @@ const query = computed({
   }
 })
 
+const config = useRuntimeConfig()
+const apiBaseUrl = process.server
+  ? config.apiBaseUrl
+  : config.public.apiBaseUrl
+
 const { data, pending, error } = await useAsyncData(
-  'search-results', // строка, не функция
+  'search-results',
   () =>
     query.value
       ? $fetch('/api/catalog/search', {
-          baseURL: useRuntimeConfig().public.apiBaseUrl,
+          baseURL: apiBaseUrl,
           query: { query: query.value }
         })
       : Promise.resolve({ products: [] }),
@@ -22,6 +27,7 @@ const { data, pending, error } = await useAsyncData(
     watch: [query]
   }
 )
+
 </script>
 
 <template>

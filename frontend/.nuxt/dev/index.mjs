@@ -650,7 +650,8 @@ const _inlineRuntimeConfig = {
     "apiBaseUrl": "http://localhost:5000",
     "appName": "Souvenir Shop",
     "pwaEnabled": true
-  }
+  },
+  "apiBaseUrl": "http://backend:4000"
 };
 const envOptions = {
   prefix: "NITRO_",
@@ -1145,16 +1146,16 @@ _eatWhQj7AmXOqcvOZRJh0LlT_NLhqFNsryt2uhcmmTM
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"11e83-2HwKKjjHtSaAD4eTaHboLMSLzI8\"",
-    "mtime": "2025-12-11T07:22:09.883Z",
-    "size": 73347,
+    "etag": "\"11eaa-+giew4tfqPuBY8ZC+AG6+jUuuT0\"",
+    "mtime": "2025-12-11T09:43:35.429Z",
+    "size": 73386,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
-    "etag": "\"4552b-QHKe5RWzh/gyXg/Hdomhs0jYJws\"",
-    "mtime": "2025-12-11T07:22:09.896Z",
-    "size": 283947,
+    "etag": "\"455b2-cc6XX4bgqz6E6vfqlC2EtRidBSk\"",
+    "mtime": "2025-12-11T09:43:35.431Z",
+    "size": 284082,
     "path": "index.mjs.map"
   }
 };

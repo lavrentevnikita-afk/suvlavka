@@ -3,7 +3,12 @@ const route = useRoute()
 const router = useRouter()
 const config = useRuntimeConfig()
 
+const apiBaseUrl = process.server
+  ? config.apiBaseUrl
+  : config.public.apiBaseUrl
+
 const slug = computed(() => route.params.slug as string)
+
 
 const priceMin = ref<string | null>((route.query.minPrice as string) || null)
 const priceMax = ref<string | null>((route.query.maxPrice as string) || null)
@@ -30,10 +35,10 @@ const buildQuery = () => {
 }
 
 const { data, pending, error } = await useAsyncData(
-  () => ['category-products', slug.value, { ...route.query }],
+  'category-products',
   () =>
     $fetch('/api/catalog/products', {
-      baseURL: config.public.apiBaseUrl,
+      baseURL: apiBaseUrl,
       query: buildQuery()
     }),
   {

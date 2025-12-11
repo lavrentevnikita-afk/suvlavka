@@ -1,9 +1,13 @@
 <script setup lang="ts">
 const config = useRuntimeConfig()
 
+const apiBaseUrl = process.server
+  ? config.apiBaseUrl
+  : config.public.apiBaseUrl
+
 const { data, pending, error } = await useAsyncData('categories', () =>
   $fetch('/api/catalog/categories', {
-    baseURL: config.public.apiBaseUrl
+    baseURL: apiBaseUrl
   })
 )
 </script>

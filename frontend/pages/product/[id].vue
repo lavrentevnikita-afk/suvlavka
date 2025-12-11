@@ -1,15 +1,19 @@
 <script setup lang="ts">
 const route = useRoute()
 const config = useRuntimeConfig()
+const apiBaseUrl = process.server
+  ? config.apiBaseUrl
+  : config.public.apiBaseUrl
+
 const cartStore = useCartStore()
 
 const id = computed(() => Number(route.params.id))
 
 const { data, pending, error } = await useAsyncData(
-  () => `product-${id.value}`,
+  'product',
   () =>
     $fetch(`/api/catalog/products/${id.value}`, {
-      baseURL: config.public.apiBaseUrl
+      baseURL: apiBaseUrl
     }),
   { watch: [id] }
 )

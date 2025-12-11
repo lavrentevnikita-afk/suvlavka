@@ -4,16 +4,21 @@ const config = useRuntimeConfig()
 
 const id = computed(() => Number(route.params.id))
 
+const apiBaseUrl = process.server
+  ? config.apiBaseUrl
+  : config.public.apiBaseUrl
+
 const { data, pending, error } = await useAsyncData(
-  () => `order-${id.value}`,
+  'order', // <-- простой строковый ключ
   () =>
     $fetch(`/api/orders/${id.value}`, {
-      baseURL: config.public.apiBaseUrl
+      baseURL: apiBaseUrl
     }),
   { watch: [id] }
 )
 
 const order = computed(() => data.value?.order ?? null)
+
 </script>
 
 <template>
