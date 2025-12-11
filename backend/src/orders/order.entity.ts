@@ -23,7 +23,9 @@ export class Order {
     length: 255,
     nullable: true,
   })
-  email!: string | null
+  
+  @Column()
+  email: string  
 
   @Column()
   address!: string

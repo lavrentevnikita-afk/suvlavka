@@ -3,25 +3,35 @@ const router = useRouter()
 const searchTerm = ref('')
 
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 
 const cartCount = computed(() => cartStore.totalItems)
+const isAuthenticated = computed(() => authStore.isAuthenticated)
+const currentUser = computed(() => authStore.user)
 
 onMounted(() => {
   cartStore.initFromStorage()
+  authStore.initFromStorage()
 })
 
 function onSearch() {
   const value = searchTerm.value.trim()
   if (!value) return
   router.push({ path: '/search', query: { q: value } })
-  searchTerm.value = ''
+}
+
+function onLogout() {
+  authStore.logout()
+  router.push('/')
 }
 </script>
 
 <template>
   <div class="min-h-screen flex flex-col bg-gray-50">
     <header class="sticky top-0 z-10 bg-white border-b border-gray-200">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
+      <div
+        class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4"
+      >
         <!-- Logo & main nav -->
         <div class="flex items-center gap-4">
           <NuxtLink to="/" class="flex items-center gap-2">
@@ -35,7 +45,9 @@ function onSearch() {
             </span>
           </NuxtLink>
 
-          <nav class="hidden md:flex items-center gap-3 text-xs font-medium text-gray-600">
+          <nav
+            class="hidden md:flex items-center gap-3 text-xs font-medium text-gray-600"
+          >
             <NuxtLink
               to="/catalog"
               class="hover:text-slate-900 transition-colors"
@@ -50,10 +62,18 @@ function onSearch() {
             >
               B2B
             </NuxtLink>
+            <NuxtLink
+              v-if="isAuthenticated"
+              to="/account"
+              class="hover:text-slate-900 transition-colors"
+              active-class="text-slate-900"
+            >
+              Мои заказы
+            </NuxtLink>
           </nav>
         </div>
 
-        <!-- Search + cart -->
+        <!-- Search + auth + cart -->
         <div class="flex-1 flex items-center justify-end gap-3">
           <form
             class="hidden md:flex flex-1 max-w-sm items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 bg-gray-50"
@@ -61,29 +81,70 @@ function onSearch() {
           >
             <input
               v-model="searchTerm"
-              type="search"
+              type="text"
+              class="flex-1 bg-transparent text-xs outline-none"
               placeholder="Поиск по товарам..."
-              class="flex-1 bg-transparent text-xs outline-none placeholder:text-gray-400"
             />
             <button
               type="submit"
-              class="text-xs font-medium text-slate-900 hover:text-slate-700"
+              class="text-[11px] font-medium text-slate-700 hover:text-slate-900"
             >
               Найти
             </button>
           </form>
 
+          <!-- Auth -->
+          <div class="flex items-center gap-2 text-xs">
+            <template v-if="isAuthenticated && currentUser">
+              <div class="hidden sm:flex flex-col items-end leading-tight">
+                <span class="font-medium text-slate-900">
+                  {{ currentUser.name }}
+                </span>
+                <span class="text-[11px] text-slate-500">
+                  {{ currentUser.email }}
+                </span>
+              </div>
+              <button
+                type="button"
+                class="text-[11px] font-medium text-slate-700 hover:text-slate-900"
+                @click="router.push('/account')"
+              >
+                Кабинет
+              </button>
+              <button
+                type="button"
+                class="text-[11px] text-red-500 hover:text-red-600"
+                @click="onLogout"
+              >
+                Выйти
+              </button>
+            </template>
+            <template v-else>
+              <NuxtLink
+                to="/login"
+                class="text-[11px] font-medium text-slate-700 hover:text-slate-900"
+              >
+                Войти
+              </NuxtLink>
+              <span class="text-[11px] text-slate-400">/</span>
+              <NuxtLink
+                to="/register"
+                class="text-[11px] font-medium text-slate-700 hover:text-slate-900"
+              >
+                Регистрация
+              </NuxtLink>
+            </template>
+          </div>
+
+          <!-- Cart -->
           <NuxtLink
             to="/cart"
-            class="relative inline-flex items-center rounded-full border border-gray-200 px-3 py-1.5 text-xs font-medium text-slate-900 hover:bg-gray-50"
+            class="inline-flex items-center gap-1 rounded-full bg-slate-900 px-3 py-1.5 text-xs font-medium text-white"
           >
-            <span class="mr-2">
-              🛒
-            </span>
             <span>Корзина</span>
             <span
               v-if="cartCount > 0"
-              class="ml-2 inline-flex min-w-[1.5rem] justify-center rounded-full bg-slate-900 px-1.5 text-[10px] font-semibold leading-4 text-white"
+              class="inline-flex min-w-[20px] justify-center rounded-full bg-white/10 px-1 text-[11px]"
             >
               {{ cartCount }}
             </span>
@@ -97,7 +158,9 @@ function onSearch() {
     </main>
 
     <footer class="border-t border-gray-200 bg-gray-50">
-      <div class="max-w-6xl mx-auto px-4 py-3 text-xs text-gray-500 flex justify-between">
+      <div
+        class="max-w-6xl mx-auto px-4 py-3 text-xs text-gray-500 flex justify-between"
+      >
         <span>© {{ new Date().getFullYear() }} Souvenir Shop</span>
         <span>Стек: Nuxt 3 + NestJS</span>
       </div>

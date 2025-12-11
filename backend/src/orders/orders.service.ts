@@ -47,7 +47,7 @@ export class OrdersService {
       return {
         productId: product.id,
         quantity: i.quantity,
-        price: Number(product.price), // <-- число
+        price: Number(product.price),
         name: product.name,
       }
     })
@@ -57,10 +57,15 @@ export class OrdersService {
       0,
     )
 
+    const normalizedEmail =
+      dto.email && dto.email.trim().length > 0
+        ? dto.email.trim().toLowerCase()
+        : null
+
     const order = this.ordersRepository.create({
       customerName: dto.customerName,
       phone: dto.phone,
-      email: dto.email ?? null,
+      email: normalizedEmail,
       address: dto.address,
       comment: dto.comment ?? null,
       items,
@@ -77,5 +82,15 @@ export class OrdersService {
       throw new NotFoundException('Order not found')
     }
     return order
+  }
+
+  async getForEmail(email: string): Promise<Order[]> {
+    const normalizedEmail = email.trim().toLowerCase()
+
+    return this.ordersRepository
+      .createQueryBuilder('order')
+      .where('LOWER(order.email) = :email', { email: normalizedEmail })
+      .orderBy('order.createdAt', 'DESC')
+      .getMany()
   }
 }
