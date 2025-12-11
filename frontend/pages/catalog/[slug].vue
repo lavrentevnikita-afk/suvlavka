@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const router = useRouter()
+const config = useRuntimeConfig()
 
 const slug = computed(() => route.params.slug as string)
 
@@ -15,18 +16,24 @@ const buildQuery = () => {
     sort: sort.value
   }
 
-  if (priceMin.value) query.minPrice = priceMin.value
-  if (priceMax.value) query.maxPrice = priceMax.value
-  if (inStock.value) query.inStock = 'true'
+  if (priceMin.value) {
+    query.minPrice = priceMin.value
+  }
+  if (priceMax.value) {
+    query.maxPrice = priceMax.value
+  }
+  if (inStock.value) {
+    query.inStock = 'true'
+  }
 
   return query
 }
 
 const { data, pending, error } = await useAsyncData(
-  'category-products', // ключ ДОЛЖЕН быть строкой
+  () => ['category-products', slug.value, { ...route.query }],
   () =>
     $fetch('/api/catalog/products', {
-      baseURL: useRuntimeConfig().public.apiBaseUrl,
+      baseURL: config.public.apiBaseUrl,
       query: buildQuery()
     }),
   {
@@ -34,16 +41,14 @@ const { data, pending, error } = await useAsyncData(
   }
 )
 
+const hasProducts = computed(() => (data.value?.products?.length ?? 0) > 0)
+
 function applyFilters() {
   router.push({
     path: `/catalog/${slug.value}`,
-    query: {
-      ...buildQuery()
-    }
+    query: buildQuery()
   })
 }
-
-const hasProducts = computed(() => (data.value?.products?.length ?? 0) > 0)
 </script>
 
 <template>
@@ -57,68 +62,66 @@ const hasProducts = computed(() => (data.value?.products?.length ?? 0) > 0)
       </p>
     </header>
 
-    <div class="rounded-lg border border-gray-200 bg-white p-3 text-sm flex flex-wrap gap-3 items-end">
-      <div class="flex flex-col">
-        <label for="price-min" class="text-xs text-gray-500 mb-1">Цена от</label>
+    <!-- Фильтры -->
+    <form
+      class="flex flex-wrap items-end gap-3 rounded-lg border border-gray-200 bg-white p-3 text-xs"
+      @submit.prevent="applyFilters"
+    >
+      <div class="flex flex-col gap-1">
+        <label class="text-[11px] text-gray-500">Цена от</label>
         <input
-          id="price-min"
           v-model="priceMin"
           type="number"
           min="0"
-          class="rounded-md border-gray-300 text-sm px-2 py-1 w-28"
-          placeholder="0"
+          class="w-28 rounded border border-gray-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
         />
       </div>
-
-      <div class="flex flex-col">
-        <label for="price-max" class="text-xs text-gray-500 mb-1">Цена до</label>
+      <div class="flex flex-col gap-1">
+        <label class="text-[11px] text-gray-500">Цена до</label>
         <input
-          id="price-max"
           v-model="priceMax"
           type="number"
           min="0"
-          class="rounded-md border-gray-300 text-sm px-2 py-1 w-28"
-          placeholder="∞"
+          class="w-28 rounded border border-gray-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
         />
       </div>
 
-      <label class="inline-flex items-center gap-2 text-xs text-gray-700">
+      <label class="inline-flex items-center gap-1 text-[11px] text-gray-700">
         <input
           v-model="inStock"
           type="checkbox"
-          class="rounded border-gray-300"
+          class="h-3 w-3 rounded border-gray-300 text-slate-900"
         />
         Только в наличии
       </label>
 
-      <div class="flex flex-col">
-        <label for="sort" class="text-xs text-gray-500 mb-1">Сортировка</label>
+      <div class="flex flex-col gap-1">
+        <label class="text-[11px] text-gray-500">Сортировка</label>
         <select
-          id="sort"
           v-model="sort"
-          class="rounded-md border-gray-300 text-sm px-2 py-1"
+          class="rounded border border-gray-200 px-2 py-1 text-xs outline-none focus:border-slate-400"
         >
           <option value="popularity">По популярности</option>
           <option value="price">По цене</option>
-          <option value="new">По новизне</option>
+          <option value="new">Сначала новые</option>
         </select>
       </div>
 
       <button
-        type="button"
-        class="ml-auto inline-flex items-center px-3 py-1.5 rounded-full bg-brand text-white text-xs font-medium"
-        @click="applyFilters"
+        type="submit"
+        class="ml-auto inline-flex items-center rounded-full bg-slate-900 px-4 py-1.5 text-xs font-medium text-white"
       >
         Применить
       </button>
-    </div>
+    </form>
 
+    <!-- Список товаров -->
     <div v-if="pending" class="text-sm text-gray-500">
-      Загрузка товаров…
+      Загружаем товары...
     </div>
 
-    <div v-else-if="error" class="text-sm text-red-600">
-      Ошибка при загрузке товаров
+    <div v-else-if="error" class="text-sm text-red-500">
+      Ошибка при загрузке товаров.
     </div>
 
     <div v-else-if="!hasProducts" class="text-sm text-gray-500">
@@ -143,7 +146,7 @@ const hasProducts = computed(() => (data.value?.products?.length ?? 0) > 0)
         </p>
 
         <p class="mt-auto pt-2 font-semibold">
-          {{ product.price }} ₽
+          {{ Number(product.price) }} ₽
         </p>
       </article>
     </div>

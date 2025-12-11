@@ -1,7 +1,9 @@
 <script setup lang="ts">
+const config = useRuntimeConfig()
+
 const { data, pending, error } = await useAsyncData('categories', () =>
   $fetch('/api/catalog/categories', {
-    baseURL: useRuntimeConfig().public.apiBaseUrl
+    baseURL: config.public.apiBaseUrl
   })
 )
 </script>
@@ -16,11 +18,11 @@ const { data, pending, error } = await useAsyncData('categories', () =>
     </header>
 
     <div v-if="pending" class="text-sm text-gray-500">
-      Загрузка категорий…
+      Загружаем категории...
     </div>
 
-    <div v-else-if="error" class="text-sm text-red-600">
-      Ошибка при загрузке категорий
+    <div v-else-if="error" class="text-sm text-red-500">
+      Не удалось загрузить категории.
     </div>
 
     <ul
@@ -30,11 +32,10 @@ const { data, pending, error } = await useAsyncData('categories', () =>
       <li
         v-for="category in data?.categories"
         :key="category.slug"
-        class="group"
       >
         <NuxtLink
           :to="`/catalog/${category.slug}`"
-          class="block h-full rounded-lg border border-gray-200 bg-white p-3 text-sm transition hover:border-brand hover:shadow-sm"
+          class="group flex h-full flex-col rounded-lg border border-gray-200 bg-white p-3 text-sm transition hover:border-slate-300"
         >
           <h2 class="font-medium text-gray-900 group-hover:text-brand">
             {{ category.name }}
@@ -44,6 +45,12 @@ const { data, pending, error } = await useAsyncData('categories', () =>
             class="mt-1 text-xs text-gray-500 line-clamp-2"
           >
             {{ category.description }}
+          </p>
+          <p
+            v-else
+            class="mt-1 text-xs text-gray-400"
+          >
+            Описание категории скоро появится.
           </p>
         </NuxtLink>
       </li>
