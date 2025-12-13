@@ -26,6 +26,10 @@ export class GetProductsQueryDto {
   @IsString()
   sort?: 'popularity' | 'price' | 'new'
 
+  @IsOptional()
+  @IsString()
+  city?: string
+
   @Type(() => Number)
   @IsOptional()
   @IsInt()
@@ -50,4 +54,8 @@ export class SearchQueryDto {
   @Min(1)
   @Max(50)
   limit?: number
+
+  @IsOptional()
+  @IsString()
+  city?: string
 }

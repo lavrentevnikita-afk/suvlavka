@@ -19,6 +19,8 @@
         <h2 class="text-lg font-semibold mb-2">Профиль</h2>
         <p><span class="font-medium">Имя:</span> {{ user.name }}</p>
         <p><span class="font-medium">Email:</span> {{ user.email }}</p>
+        <p v-if="user.phone" class="mt-1"><span class="font-medium">Телефон:</span> {{ user.phone }}</p>
+        <p v-if="user.city" class="mt-1"><span class="font-medium">Город:</span> {{ user.city }}</p>
         <p class="mt-2">
           <span class="font-medium">Тип аккаунта:</span>
           <span
@@ -50,6 +52,47 @@
             Зарегистрировать магазин
           </NuxtLink>
         </p>
+      </div>
+
+      <div class="mb-6 rounded-lg border border-slate-200 p-4 bg-white">
+        <div class="flex items-center justify-between gap-3">
+          <h2 class="text-lg font-semibold">Настройки профиля</h2>
+          <button
+            type="button"
+            class="text-sm text-sky-600 hover:underline disabled:opacity-50"
+            :disabled="profileSaving"
+            @click="saveProfile"
+          >
+            {{ profileSaving ? 'Сохранение...' : 'Сохранить' }}
+          </button>
+        </div>
+
+        <div class="mt-4 grid gap-3 md:grid-cols-2 text-sm">
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">Имя</label>
+            <input v-model="profileForm.name" type="text" class="w-full rounded border border-slate-200 px-3 py-2" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">Телефон</label>
+            <input v-model="profileForm.phone" type="tel" class="w-full rounded border border-slate-200 px-3 py-2" placeholder="+7" />
+          </div>
+          <div>
+            <label class="block text-xs text-slate-500 mb-1">Город</label>
+            <select v-model="profileForm.city" class="w-full rounded border border-slate-200 px-3 py-2">
+              <option value="">Не выбран</option>
+              <option v-for="c in CITY_OPTIONS" :key="c.code" :value="c.code">
+                {{ c.name }}
+              </option>
+            </select>
+            <p class="mt-1 text-[11px] text-slate-400">Город влияет на порядок товаров в каталоге.</p>
+          </div>
+          <div class="md:col-span-2">
+            <label class="block text-xs text-slate-500 mb-1">Адрес по умолчанию</label>
+            <textarea v-model="profileForm.address" rows="2" class="w-full rounded border border-slate-200 px-3 py-2 resize-none" placeholder="Город, улица, дом, квартира" />
+          </div>
+        </div>
+
+        <p v-if="profileError" class="mt-2 text-sm text-red-600">{{ profileError }}</p>
       </div>
 
       <div class="mb-4 flex items-center justify-between">
@@ -129,6 +172,7 @@
 </template>
 
 <script setup lang="ts">
+import { CITY_OPTIONS, useCityStore } from '~/stores/city'
 interface AccountOrder {
   id: number
   customerName: string
@@ -148,6 +192,7 @@ interface AccountOrder {
 
 const authStore = useAuthStore()
 const config = useRuntimeConfig()
+const cityStore = useCityStore()
 
 const user = computed(() => authStore.user)
 
@@ -161,6 +206,70 @@ const roleLabel = computed(() => {
 const orders = ref<AccountOrder[]>([])
 const loading = ref(false)
 const error = ref('')
+
+const profileForm = reactive({
+  name: '',
+  phone: '',
+  city: '',
+  address: '',
+})
+
+const profileSaving = ref(false)
+const profileError = ref('')
+
+async function loadProfile() {
+  if (!authStore.accessToken) return
+  try {
+    const res = await $fetch<{ user: any }>('/api/users/me', {
+      baseURL: config.public.apiBaseUrl,
+      headers: { Authorization: `Bearer ${authStore.accessToken}` },
+    })
+
+    const u = res?.user
+    profileForm.name = u?.name ?? authStore.user?.name ?? ''
+    profileForm.phone = u?.phone ?? authStore.user?.phone ?? ''
+    profileForm.city = u?.city ?? authStore.user?.city ?? ''
+    profileForm.address = u?.address ?? authStore.user?.address ?? ''
+
+    // синхронизируем с глобальным выбором города
+    if (profileForm.city) {
+      await cityStore.setCity(profileForm.city)
+    }
+  } catch {
+    // не критично
+  }
+}
+
+async function saveProfile() {
+  if (!authStore.accessToken) return
+  profileSaving.value = true
+  profileError.value = ''
+  try {
+    const res = await $fetch<{ user: any }>('/api/users/me', {
+      baseURL: config.public.apiBaseUrl,
+      method: 'PATCH',
+      headers: { Authorization: `Bearer ${authStore.accessToken}` },
+      body: {
+        name: profileForm.name,
+        phone: profileForm.phone || null,
+        city: profileForm.city || null,
+        address: profileForm.address || null,
+      },
+    })
+
+    if (res?.user) {
+      authStore.user = { ...(authStore.user as any), ...res.user }
+      authStore.persist()
+    }
+
+    // и в общий выбор города
+    if (profileForm.city) await cityStore.setCity(profileForm.city)
+  } catch (err: any) {
+    profileError.value = err?.data?.message || 'Не удалось сохранить профиль.'
+  } finally {
+    profileSaving.value = false
+  }
+}
 
 const formatDate = (value: string | Date | undefined) => {
   if (!value) return ''
@@ -199,6 +308,8 @@ const fetchOrders = async () => {
 }
 
 onMounted(() => {
+  cityStore.init()
+  loadProfile()
   fetchOrders()
 })
 </script>

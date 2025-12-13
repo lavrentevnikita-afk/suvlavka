@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useCityStore } from '~/stores/city'
 const route = useRoute()
 const router = useRouter()
 
@@ -14,13 +15,16 @@ const apiBaseUrl = process.server
   ? config.apiBaseUrl
   : config.public.apiBaseUrl
 
+const cityStore = useCityStore()
+onMounted(() => cityStore.init())
+
 const { data, pending, error } = await useAsyncData(
   'search-results',
   () =>
     query.value
       ? $fetch('/api/catalog/search', {
           baseURL: apiBaseUrl,
-          query: { query: query.value }
+          query: { query: query.value, ...(cityStore.code ? { city: cityStore.code } : {}) }
         })
       : Promise.resolve({ products: [] }),
   {

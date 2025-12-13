@@ -27,6 +27,9 @@ export class AuthController {
         name: user.name,
         email: user.email,
         role: user.role,
+        phone: user.phone,
+        city: user.city,
+        address: user.address,
         createdAt: user.createdAt,
       },
     }

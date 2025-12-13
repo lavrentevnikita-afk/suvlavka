@@ -5,6 +5,7 @@ import { Category } from './category.entity'
 import { Product } from './product.entity'
 import { ProductImage } from './product-image.entity'
 import { GetProductsQueryDto, SearchQueryDto } from './dto'
+import { Stock } from '../b2b/stock.entity'
 
 @Injectable()
 export class CatalogService implements OnModuleInit {
@@ -14,7 +15,9 @@ export class CatalogService implements OnModuleInit {
     @InjectRepository(Product)
     private readonly productsRepo: Repository<Product>,
     @InjectRepository(ProductImage)
-    private readonly imagesRepo: Repository<ProductImage>
+    private readonly imagesRepo: Repository<ProductImage>,
+    @InjectRepository(Stock)
+    private readonly stockRepo: Repository<Stock>
   ) {}
 
   async onModuleInit() {
@@ -115,6 +118,23 @@ export class CatalogService implements OnModuleInit {
       .leftJoinAndSelect('product.category', 'category')
       .leftJoinAndSelect('product.images', 'images')
 
+    // Приоритет выбранного города: сначала товары, у которых есть остаток на складе этого города.
+    // Реализация через stocks.warehouse (код/название города) — не ломает базовый каталог.
+    if (query.city) {
+      qb.leftJoin(
+        'stocks',
+        'cityStock',
+        'cityStock.productId = product.id AND cityStock.warehouse = :city',
+        { city: query.city },
+      )
+      qb.addSelect('COALESCE(cityStock.qty, 0)', 'cityQty')
+      qb.orderBy(
+        'CASE WHEN COALESCE(cityStock.qty, 0) > 0 THEN 0 ELSE 1 END',
+        'ASC',
+      )
+      qb.addOrderBy('COALESCE(cityStock.qty, 0)', 'DESC')
+    }
+
     if (query.category) {
       qb.andWhere('category.slug = :slug', { slug: query.category })
     }
@@ -131,17 +151,17 @@ export class CatalogService implements OnModuleInit {
       qb.andWhere('product.isAvailable = true')
     }
 
-    // Sorting
+    // Sorting (добавляем как вторичный порядок, если город уже задал первичный)
     switch (query.sort) {
       case 'price':
-        qb.orderBy('product.price', 'ASC')
+        qb.addOrderBy('product.price', 'ASC')
         break
       case 'new':
-        qb.orderBy('product.createdAt', 'DESC')
+        qb.addOrderBy('product.createdAt', 'DESC')
         break
       case 'popularity':
       default:
-        qb.orderBy('product.popularity', 'DESC')
+        qb.addOrderBy('product.popularity', 'DESC')
         break
     }
 
@@ -204,14 +224,30 @@ export class CatalogService implements OnModuleInit {
       return { products: [] }
     }
 
-    const products = await this.productsRepo.find({
-      where: [
-        { name: ILike(`%${q}%`) },
-        { article: ILike(`%${q}%`) }
-      ],
-      take: limit,
-      order: { popularity: 'DESC' }
-    })
+    const qb = this.productsRepo.createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.images', 'images')
+      .where('product.name ILIKE :q OR product.article ILIKE :q', { q: `%${q}%` })
+      .take(limit)
+
+    if (query.city) {
+      qb.leftJoin(
+        'stocks',
+        'cityStock',
+        'cityStock.productId = product.id AND cityStock.warehouse = :city',
+        { city: query.city },
+      )
+      qb.addSelect('COALESCE(cityStock.qty, 0)', 'cityQty')
+      qb.orderBy(
+        'CASE WHEN COALESCE(cityStock.qty, 0) > 0 THEN 0 ELSE 1 END',
+        'ASC',
+      )
+      qb.addOrderBy('COALESCE(cityStock.qty, 0)', 'DESC')
+    }
+
+    qb.addOrderBy('product.popularity', 'DESC')
+
+    const products = await qb.getMany()
 
     const wholesaleCoef = Number(process.env.WHOLESALE_COEF ?? '0.85')
     for (const p of products as any[]) {

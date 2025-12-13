@@ -27,4 +27,14 @@ export class UsersService {
     const user = this.usersRepository.create(data)
     return this.usersRepository.save(user)
   }
+
+  async updateMe(
+    id: number,
+    dto: Partial<Pick<User, 'name' | 'phone' | 'city' | 'address'>>,
+  ): Promise<User> {
+    await this.usersRepository.update({ id }, dto)
+    const updated = await this.findById(id)
+    // findById may return null only if the user was deleted; in our flow it's safe
+    return updated as User
+  }
 }

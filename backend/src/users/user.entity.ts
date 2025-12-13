@@ -27,6 +27,18 @@ export class User {
   @Column({ type: 'varchar', length: 20, default: 'customer' })
   role!: UserRole
 
+  // Профиль (для автоподстановки при оформлении заказа)
+  @Column({ type: 'varchar', length: 40, nullable: true })
+  phone: string | null = null
+
+  // Выбранный город (для приоритета ассортимента)
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  city: string | null = null
+
+  // Адрес по умолчанию
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address: string | null = null
+
   @CreateDateColumn({ type: 'timestamptz' })
   createdAt!: Date
 }

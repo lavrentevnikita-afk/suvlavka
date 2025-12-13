@@ -49,4 +49,12 @@ export class B2bController {
   activate(@Req() req: any, @Param('userId') userId: string) {
     return this.b2bService.activateStore(req.user, Number(userId))
   }
+
+  // остатки по артикулам (для магазина и менеджера)
+  // GET /api/b2b/stock?articles=SV-0001,SV-0002
+  @UseGuards(JwtAuthGuard)
+  @Get('stock')
+  stock(@Req() req: any, @Query('articles') articles?: string) {
+    return this.b2bService.getStock(req.user, articles)
+  }
 }

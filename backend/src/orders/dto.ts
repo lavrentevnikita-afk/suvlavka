@@ -30,6 +30,10 @@ export class CreateOrderDto {
   @IsEmail()
   email?: string
 
+  @IsOptional()
+  @IsString()
+  phone?: string
+
   @IsString()
   @MinLength(5)
   address!: string

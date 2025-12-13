@@ -12,6 +12,24 @@ const form = reactive({
   comment: ''
 })
 
+// автозаполнение из профиля
+onMounted(async () => {
+  if (!authStore.accessToken) return
+  try {
+    const { user } = await $fetch<{ user: any }>('/api/users/me', {
+      baseURL: config.public.apiBaseUrl,
+      headers: { Authorization: `Bearer ${authStore.accessToken}` },
+    })
+
+    if (!form.name) form.name = user?.name ?? ''
+    if (!form.phone) form.phone = user?.phone ?? ''
+    if (!form.email) form.email = user?.email ?? ''
+    if (!form.address) form.address = user?.address ?? ''
+  } catch {
+    // молча, оформление не должно ломаться
+  }
+})
+
 const isSubmitting = ref(false)
 const errorMessage = ref<string | null>(null)
 

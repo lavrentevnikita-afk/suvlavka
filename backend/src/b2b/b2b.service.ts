@@ -1,10 +1,12 @@
 import { BadRequestException, ForbiddenException, Injectable, NotFoundException } from '@nestjs/common'
 import { InjectRepository } from '@nestjs/typeorm'
-import { Repository } from 'typeorm'
+import { In, Repository } from 'typeorm'
 import { UsersService } from '../users/users.service'
 import { StoreProfile } from './store-profile.entity'
 import { User } from '../users/user.entity'
 import * as bcrypt from 'bcrypt'
+import { Product } from '../catalog/product.entity'
+import { Stock } from './stock.entity'
 
 @Injectable()
 export class B2bService {
@@ -14,6 +16,10 @@ export class B2bService {
     private readonly storeRepo: Repository<StoreProfile>,
     @InjectRepository(User)
     private readonly userRepo: Repository<User>,
+    @InjectRepository(Product)
+    private readonly productRepo: Repository<Product>,
+    @InjectRepository(Stock)
+    private readonly stockRepo: Repository<Stock>,
   ) {}
 
   async registerStore(dto: {
@@ -179,5 +185,46 @@ export class B2bService {
         user: { id: p.user.id, name: p.user.name, email: p.user.email, role: p.user.role },
       })),
     }
+  }
+
+  /**
+   * Остатки по артикулам (для быстрого заказа).
+   * GET /api/b2b/stock?articles=SV-0001,SV-0002
+   */
+  async getStock(user: User, articles?: string) {
+    if (user.role !== 'store' && user.role !== 'manager') {
+      throw new ForbiddenException('Недостаточно прав')
+    }
+
+    const list = (articles ?? '')
+      .split(',')
+      .map((s) => s.trim())
+      .filter(Boolean)
+
+    if (!list.length) return { items: [] }
+
+    const products = await this.productRepo.find({ where: { article: In(list) } })
+    const byArticle = new Map(products.map((p) => [p.article, p]))
+
+    const rows = products.length
+      ? await this.stockRepo.find({
+          where: { product: { id: In(products.map((p) => p.id)) } },
+        })
+      : []
+
+    const out = list.map((article) => {
+      const p = byArticle.get(article)
+      const stocks = p ? rows.filter((r) => r.product.id === p.id) : []
+      const total = stocks.reduce((sum, r) => sum + (r.qty ?? 0), 0)
+      return {
+        article,
+        productId: p?.id ?? null,
+        name: (p as any)?.name ?? null,
+        total,
+        byWarehouse: stocks.map((s) => ({ warehouse: s.warehouse, qty: s.qty })),
+      }
+    })
+
+    return { items: out }
   }
 }

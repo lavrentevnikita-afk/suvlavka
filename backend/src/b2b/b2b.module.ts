@@ -7,10 +7,12 @@ import { B2bService } from './b2b.service'
 import { StoreProfile } from './store-profile.entity'
 import { User } from '../users/user.entity'
 import { B2bBootstrapService } from './b2b.bootstrap.service'
+import { Product } from '../catalog/product.entity'
+import { Stock } from './stock.entity'
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([StoreProfile, User]),
+    TypeOrmModule.forFeature([StoreProfile, User, Product, Stock]),
     UsersModule,
     AuthModule,
   ],

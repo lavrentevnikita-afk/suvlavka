@@ -7,11 +7,16 @@ import {
 import { JwtService } from '@nestjs/jwt'
 import { Request } from 'express'
 import { AuthService } from './auth.service'
+import { Injectable } from '@nestjs/common'
+import { AuthGuard } from '@nestjs/passport'
 
 interface JwtPayload {
   sub: number
   email: string
 }
+
+@Injectable()
+export class JwtAuthGuard extends AuthGuard('jwt') {}
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

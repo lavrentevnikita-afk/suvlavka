@@ -1,9 +1,15 @@
 <script setup lang="ts">
+import { useCityStore } from '~/stores/city'
 const route = useRoute()
 const auth = useAuthStore()
 auth.initFromStorage()
 const router = useRouter()
 const config = useRuntimeConfig()
+const cityStore = useCityStore()
+
+onMounted(() => {
+  cityStore.init()
+})
 
 const apiBaseUrl = process.server ? config.apiBaseUrl : config.public.apiBaseUrl
 
@@ -28,6 +34,7 @@ const buildQuery = () => {
     category: slug.value,
     sort: sort.value,
   }
+  if (cityStore.code) query.city = cityStore.code
   if (priceMin.value) query.minPrice = priceMin.value
   if (priceMax.value) query.maxPrice = priceMax.value
   if (inStock.value) query.inStock = 'true'

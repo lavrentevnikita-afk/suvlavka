@@ -1,9 +1,12 @@
 <script setup lang="ts">
+import CityPicker from '~/components/CityPicker.vue'
+import { useCityStore } from '~/stores/city'
 const router = useRouter()
 const searchTerm = ref('')
 
 const cartStore = useCartStore()
 const authStore = useAuthStore()
+const cityStore = useCityStore()
 
 const cartCount = computed(() => cartStore.totalItems)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
@@ -16,6 +19,7 @@ const isB2BUser = computed(() => {
 onMounted(() => {
   cartStore.initFromStorage()
   authStore.initFromStorage()
+  cityStore.init()
 })
 
 function onSearch() {
@@ -80,6 +84,8 @@ function onLogout() {
 
         <!-- Search + auth + cart -->
         <div class="flex-1 flex items-center justify-end gap-3">
+          <CityPicker />
+
           <form
             class="hidden md:flex flex-1 max-w-sm items-center gap-2 rounded-full border border-gray-200 px-3 py-1.5 bg-gray-50"
             @submit.prevent="onSearch"

@@ -24,6 +24,7 @@ const form = reactive({
   inn: '',
   kpp: '',
   ogrn: '',
+  priceGroupId: null as number | null,
 })
 
 async function load() {
@@ -47,6 +48,7 @@ async function load() {
     form.inn = profile.value?.inn ?? ''
     form.kpp = profile.value?.kpp ?? ''
     form.ogrn = profile.value?.ogrn ?? ''
+    form.priceGroupId = profile.value?.priceGroupId ?? null
   } catch (e: any) {
     error.value = e?.data?.message || 'Не удалось загрузить профиль магазина'
   } finally {
@@ -88,6 +90,7 @@ async function save() {
         inn: form.inn || null,
         kpp: form.kpp || null,
         ogrn: form.ogrn || null,
+        priceGroupId: form.priceGroupId,
       },
     })
     profile.value = res?.storeProfile ?? profile.value
@@ -131,6 +134,21 @@ onMounted(load)
               <div class="md:col-span-2">
                 <label class="text-xs text-gray-500">Публичное название (как будет отображаться)</label>
                 <input v-model="form.displayName" class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400" placeholder="Напр., Магазин Сувениров на Невском" />
+              </div>
+              <div class="md:col-span-2">
+                <label class="text-xs text-gray-500">Ценовая группа</label>
+                <select
+                  v-model="form.priceGroupId"
+                  class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                >
+                  <option :value="null">По умолчанию</option>
+                  <option :value="1">Опт-1</option>
+                  <option :value="2">Опт-2</option>
+                  <option :value="3">Индивидуальная</option>
+                </select>
+                <div class="mt-1 text-[11px] text-gray-500">
+                  Пока фиксированные группы для MVP. Дальше можно будет настраивать в кабинете менеджера.
+                </div>
               </div>
               <div>
                 <label class="text-xs text-gray-500">Город</label>

@@ -25,9 +25,15 @@ export class OrdersController {
     const emailFromToken: string | undefined = req?.user?.email
     const normalizedEmail = emailFromToken?.trim().toLowerCase()
 
+    const u = req.user
+
     return this.ordersService.create({
       ...dto,
+      // автоподстановка, если поле пустое
+      customerName: dto.customerName || u?.name,
       email: normalizedEmail ?? dto.email,
+      phone: dto.phone || u?.phone || undefined,
+      address: dto.address || u?.address,
     })
   }
 

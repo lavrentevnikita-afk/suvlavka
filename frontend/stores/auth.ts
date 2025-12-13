@@ -6,6 +6,9 @@ export interface AuthUser {
   name: string
   email: string
   role?: 'customer' | 'store' | 'manager'
+  phone?: string | null
+  city?: string | null
+  address?: string | null
   createdAt: string
 }
 

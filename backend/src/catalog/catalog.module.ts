@@ -5,9 +5,10 @@ import { CatalogService } from './catalog.service'
 import { Category } from './category.entity'
 import { Product } from './product.entity'
 import { ProductImage } from './product-image.entity'
+import { Stock } from '../b2b/stock.entity'
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Category, Product, ProductImage])],
+  imports: [TypeOrmModule.forFeature([Category, Product, ProductImage, Stock])],
   controllers: [CatalogController],
   providers: [CatalogService],
   exports: [CatalogService]

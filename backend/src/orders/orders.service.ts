@@ -66,6 +66,7 @@ export class OrdersService {
     const order = this.ordersRepository.create({
       customerName: dto.customerName,   // <-- ИСПОЛЬЗУЕМ customerName ИЗ DTO
       email: normalizedEmail,
+      phone: dto.phone ?? null,
       address: dto.address,
       comment: dto.comment ?? null,
       totalPrice: totalPriceNumber.toFixed(2),

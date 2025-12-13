@@ -32,6 +32,7 @@ export { useCatalogViewMode } from '../composables/useCatalogViewMode';
 export { useRecentlyViewed, RecentlyViewedItem } from '../composables/useRecentlyViewed';
 export { useAuthStore, AuthUser } from '../stores/auth';
 export { useCartStore, CartProductSnapshot, CartItem } from '../stores/cart';
+export { CITY_OPTIONS, useCityStore, CityOption } from '../stores/city';
 export { defineStore, acceptHMRUpdate, usePinia, storeToRefs } from '../node_modules/@pinia/nuxt/dist/runtime/composables';
 export { usePWA, useTransparentPwaIcon, useMaskablePwaIcon, useFaviconPwaIcon, useApplePwaIcon, useAppleSplashScreenPwaIcon } from '../node_modules/@vite-pwa/nuxt/dist/runtime/composables/index';
 export { useNuxtDevTools } from '../node_modules/@nuxt/devtools/dist/runtime/use-nuxt-devtools';
