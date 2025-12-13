@@ -19,8 +19,6 @@ const { data, pending, error } = await useAsyncData(
   { watch: [id] }
 )
 
-const activeImageIndex = ref(0)
-
 const product = computed(() => data.value?.product ?? null)
 
 // Pricing mode: in B2B area show wholesale first
@@ -31,12 +29,12 @@ const wholesalePrice = computed(() => product.value?.wholesalePrice ?? null)
 
 const images = computed(() => product.value?.images ?? [])
 
-const mainImage = computed(() => {
-  if (!images.value.length) return null
-  return images.value[activeImageIndex.value]?.url ?? images.value[0]?.url ?? null
-})
-
 const isAvailable = computed(() => !!product.value?.isAvailable)
+
+const availabilityHint = computed(() => {
+  const specs = (product.value as any)?.specs
+  return (specs?.['Наличие'] ?? specs?.availability ?? null) as string | null
+})
 
 watch(
   product,
@@ -90,11 +88,6 @@ watch(
 const addingToCart = ref(false)
 const addError = ref<string | null>(null)
 
-function selectImage(index: number) {
-  if (index < 0 || index >= images.value.length) return
-  activeImageIndex.value = index
-}
-
 function addToCart() {
   if (!product.value || !isAvailable.value) return
   addError.value = null
@@ -106,7 +99,9 @@ function addToCart() {
         name: product.value.name,
         price: Number(product.value.price),
         article: product.value.article,
-        imageUrl: images.value[0]?.url ?? null
+        imageUrl: images.value[0]?.url ?? null,
+        categorySlug: product.value?.category?.slug ?? null,
+        categoryName: product.value?.category?.name ?? null,
       },
       1
     )
@@ -116,26 +111,6 @@ function addToCart() {
     addingToCart.value = false
   }
 }
-watch(
-  () => product.value?.category?.slug,
-  async (categorySlug) => {
-    if (!categorySlug) return
-    similarPending.value = true
-    try {
-      const res = await $fetch<any>('/api/catalog/products', {
-        baseURL: apiBaseUrl,
-        query: { category: categorySlug, sort: 'popularity', limit: '8', page: '1' },
-      })
-      const list = Array.isArray(res?.products) ? res.products : []
-      similar.value = list.filter((x) => x?.id !== product.value?.id).slice(0, 6)
-    } catch {
-      similar.value = []
-    } finally {
-      similarPending.value = false
-    }
-  },
-  { immediate: true }
-)
 </script>
 
 <template>
@@ -150,45 +125,7 @@ watch(
   <section v-else class="space-y-6">
     <div class="grid gap-6 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)] items-start">
       <!-- Галерея изображений -->
-      <div class="space-y-4">
-        <div
-          class="aspect-square w-full overflow-hidden rounded-lg border border-gray-200 bg-white flex items-center justify-center"
-        >
-          <img
-            v-if="mainImage"
-            :src="mainImage"
-            :alt="product.name"
-            class="h-full w-full object-contain"
-          />
-          <div v-else class="text-xs text-gray-400">
-            Нет изображения
-          </div>
-        </div>
-
-        <div
-          v-if="images.length > 1"
-          class="flex gap-2 overflow-x-auto pb-1"
-        >
-          <button
-            v-for="(image, index) in images"
-            :key="image.id || index"
-            type="button"
-            class="relative h-16 w-16 flex-shrink-0 overflow-hidden rounded border"
-            :class="
-              index === activeImageIndex
-                ? 'border-slate-900'
-                : 'border-gray-200 hover:border-gray-300'
-            "
-            @click="selectImage(index)"
-          >
-            <img
-              :src="image.url"
-              :alt="product.name"
-              class="h-full w-full object-cover"
-            />
-          </button>
-        </div>
-      </div>
+      <ProductGallery :images="images" :alt="product.name" />
 
       <!-- Основная информация -->
       <div class="space-y-4">
@@ -204,25 +141,13 @@ watch(
           </p>
         </header>
 
-        <div class="flex items-center gap-4">
+        <div class="flex flex-wrap items-center gap-3">
           <ProductPriceBlock
             :retail-price="retailPrice"
             :wholesale-price="wholesalePrice"
             :mode="priceMode"
           />
-          <span
-            class="inline-flex items-center rounded-full px-2 py-0.5 text-[11px] font-medium"
-            :class="
-              isAvailable
-                ? 'bg-emerald-100 text-emerald-800'
-                : 'bg-gray-100 text-gray-500'
-            "
-          >
-            <span class="mr-1">
-              {{ isAvailable ? '●' : '○' }}
-            </span>
-            {{ isAvailable ? 'В наличии' : 'Нет в наличии' }}
-          </span>
+          <ProductAvailabilityBadge :is-available="isAvailable" :hint="availabilityHint" />
         </div>
 
         <div class="space-y-3 text-sm">
@@ -282,5 +207,8 @@ watch(
         <ProductCard v-for="p in similar" :key="p.id" :product="p" :mode="priceMode" :prefetch="true" />
       </div>
     </section>
+
+    <!-- Reviews -->
+    <ProductReviewsBasic :product-id="product.id" :product-name="product.name" />
   </section>
 </template>

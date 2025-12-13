@@ -5,6 +5,7 @@ const router = useRouter()
 const items = computed(() => cartStore.items)
 const totalPrice = computed(() => cartStore.totalPrice)
 const isEmpty = computed(() => cartStore.isEmpty)
+const productIds = computed(() => items.value.map((i) => i.product.id))
 
 function onQuantityChange(itemId: number, value: string) {
   const num = Number(value)
@@ -45,7 +46,8 @@ function goToCheckout() {
 
     <div v-else class="grid gap-6 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)] items-start">
       <!-- Список товаров -->
-      <ul class="space-y-3">
+      <div class="space-y-6">
+        <ul class="space-y-3">
         <li
           v-for="item in items"
           :key="item.product.id"
@@ -111,29 +113,22 @@ function goToCheckout() {
             </div>
           </div>
         </li>
-      </ul>
+        </ul>
 
-      <!-- Итоги -->
-      <aside class="space-y-3 rounded-lg border border-gray-200 bg-white p-4 text-sm">
-        <h2 class="text-sm font-semibold">Итого</h2>
-        <div class="flex justify-between text-xs text-gray-600">
-          <span>Товаров</span>
-          <span>{{ cartStore.totalItems }}</span>
-        </div>
-        <div class="flex justify-between text-base font-semibold">
-          <span>Сумма</span>
-          <span>{{ totalPrice }} ₽</span>
-        </div>
+        <CartCrossSell :product-ids="productIds" />
+      </div>
 
+      <!-- Итоги + доставка/оплата -->
+      <CartSummary :items-count="cartStore.totalItems" :subtotal="totalPrice">
         <button
           type="button"
-          class="mt-3 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
+          class="mt-2 inline-flex w-full items-center justify-center rounded-full bg-slate-900 px-4 py-2 text-sm font-medium text-white disabled:cursor-not-allowed disabled:opacity-60"
           :disabled="isEmpty"
           @click="goToCheckout"
         >
-          Оформить заказ
+          Перейти к оформлению
         </button>
-      </aside>
+      </CartSummary>
     </div>
   </section>
 </template>

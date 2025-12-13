@@ -6,6 +6,9 @@ export interface CartProductSnapshot {
   price: number
   article?: string
   imageUrl?: string | null
+  // optional metadata for smarter UI (non-breaking)
+  categorySlug?: string | null
+  categoryName?: string | null
 }
 
 export interface CartItem {
