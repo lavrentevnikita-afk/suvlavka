@@ -1,3 +1,9 @@
+<script setup lang="ts">
+definePageMeta({
+  middleware: ['b2b'],
+})
+</script>
+
 <template>
   <NuxtLayout name="b2b">
     <section class="space-y-3">

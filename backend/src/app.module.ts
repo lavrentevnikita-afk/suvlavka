@@ -7,6 +7,8 @@ import { CatalogModule } from './catalog/catalog.module'
 import { OrdersModule } from './orders/orders.module'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
+import { B2bModule } from './b2b/b2b.module'
+
 
 @Module({
   imports: [
@@ -29,6 +31,8 @@ import { AuthModule } from './auth/auth.module'
     OrdersModule,
     UsersModule,
     AuthModule,
+    B2bModule,
+
   ],
   controllers: [AppController],
   providers: [AppService],

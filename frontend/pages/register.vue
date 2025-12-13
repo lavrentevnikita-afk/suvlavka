@@ -82,6 +82,13 @@ const onSubmit = async () => {
         {{ loading ? 'Регистрируем...' : 'Зарегистрироваться' }}
       </button>
     </form>
+    
+    <div class="mt-4 text-sm">
+  <NuxtLink to="/b2b/register" class="underline">
+    У вас магазин? Зарегистрироваться как магазин
+  </NuxtLink>
+</div>
+
 
     <p class="text-xs text-slate-500 mt-4">
       Уже есть аккаунт?
