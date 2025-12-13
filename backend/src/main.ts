@@ -10,8 +10,8 @@ async function bootstrap() {
     new ValidationPipe({
       transform: true,
       whitelist: true,
-      forbidNonWhitelisted: false
-    })
+      forbidNonWhitelisted: false,
+    }),
   )
 
   const port = process.env.PORT || 4000

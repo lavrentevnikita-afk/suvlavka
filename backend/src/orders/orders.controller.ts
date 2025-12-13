@@ -16,20 +16,13 @@ import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 export class OrdersController {
   constructor(private readonly ordersService: OrdersService) {}
 
+  // создание заказа
   @Post()
-  async create(@Body() dto: CreateOrderDto, @Req() req: any) {
-    const user = (req as any).user
-    // если пользователь авторизован и у него есть email — перезатираем email из формы
-    const email = user?.email ?? dto.email
-
-    const order = await this.ordersService.create({
-      ...dto,
-      email,
-    })
-    return { order }
+  create(@Body() dto: CreateOrderDto) {
+    return this.ordersService.create(dto)
   }
 
-  // Личный кабинет — заказы текущего пользователя по email
+  // Мои заказы (по email из токена)
   @UseGuards(JwtAuthGuard)
   @Get('my')
   async getMyOrders(@Req() req: any) {
@@ -38,6 +31,8 @@ export class OrdersController {
     return { orders }
   }
 
+  // один заказ по id
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   async getOne(@Param('id', ParseIntPipe) id: number) {
     const order = await this.ordersService.getOne(id)

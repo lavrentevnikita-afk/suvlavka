@@ -86,4 +86,27 @@ export class OrdersService {
 
     return order
   }
+
+  async getForEmail(email: string): Promise<Order[]> {
+    return this.ordersRepository.find({
+      where: { customerEmail: email },
+      order: { createdAt: 'DESC' },
+    })
+  }
+
+  async findAll(): Promise<Order[]> {
+    return this.ordersRepository.find({
+      order: { createdAt: 'DESC' },
+    })
+  }
+
+  async getOne(id: number): Promise<Order> {
+    const order = await this.ordersRepository.findOne({ where: { id } })
+
+    if (!order) {
+      throw new NotFoundException(`Order with id ${id} not found`)
+    }
+
+    return order
+  }
 }

@@ -5,27 +5,19 @@ const password = ref('')
 const loading = ref(false)
 const errorMessage = ref('')
 
-const config = useRuntimeConfig()
 const router = useRouter()
+const authStore = useAuthStore()
 
 const onSubmit = async () => {
   loading.value = true
   errorMessage.value = ''
 
   try {
-    await $fetch('/auth/register', {
-      baseURL: config.public.apiBaseUrl,
-      method: 'POST',
-      body: {
-        name: name.value,
-        email: email.value,
-        password: password.value,
-      },
-      credentials: 'include',
-    })
+    // регистрация + сразу авторизация через Pinia-store
+    await authStore.register(name.value, email.value, password.value)
 
-    // после успешной регистрации отправим на логин
-    await router.push('/login')
+    // сразу ведём в личный кабинет
+    await router.push('/account')
   } catch (err: any) {
     console.error(err)
     errorMessage.value =
@@ -36,6 +28,7 @@ const onSubmit = async () => {
   }
 }
 </script>
+
 
 <template>
   <section class="max-w-md mx-auto mt-8 bg-white rounded-lg shadow-sm p-6">
