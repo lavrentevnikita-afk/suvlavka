@@ -2,7 +2,15 @@
 import type { DefineComponent, SlotsType } from 'vue'
 type IslandComponent<T extends DefineComponent> = T & DefineComponent<{}, {refresh: () => Promise<void>}, {}, {}, {}, {}, {}, {}, {}, {}, {}, {}, SlotsType<{ fallback: { error: unknown } }>>
 interface _GlobalComponents {
-      'NuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome")['default']
+      'CategoryMicroBanner': typeof import("../components/CategoryMicroBanner.vue")['default']
+    'ProductCard': typeof import("../components/ProductCard.vue")['default']
+    'ProductCardSkeleton': typeof import("../components/ProductCardSkeleton.vue")['default']
+    'ProductPriceBlock': typeof import("../components/ProductPriceBlock.vue")['default']
+    'ProductRow': typeof import("../components/ProductRow.vue")['default']
+    'ProductRowSkeleton': typeof import("../components/ProductRowSkeleton.vue")['default']
+    'QuickFilterChips': typeof import("../components/QuickFilterChips.vue")['default']
+    'ViewToggle': typeof import("../components/ViewToggle.vue")['default']
+    'NuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome")['default']
     'NuxtLayout': typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
     'NuxtErrorBoundary': typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary")['default']
     'ClientOnly': typeof import("../node_modules/nuxt/dist/app/components/client-only")['default']
@@ -33,7 +41,15 @@ interface _GlobalComponents {
     'Body': typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
     'NuxtIsland': typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
     'NuxtRouteAnnouncer': IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
-      'LazyNuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome")['default']
+      'LazyCategoryMicroBanner': typeof import("../components/CategoryMicroBanner.vue")['default']
+    'LazyProductCard': typeof import("../components/ProductCard.vue")['default']
+    'LazyProductCardSkeleton': typeof import("../components/ProductCardSkeleton.vue")['default']
+    'LazyProductPriceBlock': typeof import("../components/ProductPriceBlock.vue")['default']
+    'LazyProductRow': typeof import("../components/ProductRow.vue")['default']
+    'LazyProductRowSkeleton': typeof import("../components/ProductRowSkeleton.vue")['default']
+    'LazyQuickFilterChips': typeof import("../components/QuickFilterChips.vue")['default']
+    'LazyViewToggle': typeof import("../components/ViewToggle.vue")['default']
+    'LazyNuxtWelcome': typeof import("../node_modules/nuxt/dist/app/components/welcome")['default']
     'LazyNuxtLayout': typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
     'LazyNuxtErrorBoundary': typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary")['default']
     'LazyClientOnly': typeof import("../node_modules/nuxt/dist/app/components/client-only")['default']
@@ -70,6 +86,14 @@ declare module 'vue' {
   export interface GlobalComponents extends _GlobalComponents { }
 }
 
+export const CategoryMicroBanner: typeof import("../components/CategoryMicroBanner.vue")['default']
+export const ProductCard: typeof import("../components/ProductCard.vue")['default']
+export const ProductCardSkeleton: typeof import("../components/ProductCardSkeleton.vue")['default']
+export const ProductPriceBlock: typeof import("../components/ProductPriceBlock.vue")['default']
+export const ProductRow: typeof import("../components/ProductRow.vue")['default']
+export const ProductRowSkeleton: typeof import("../components/ProductRowSkeleton.vue")['default']
+export const QuickFilterChips: typeof import("../components/QuickFilterChips.vue")['default']
+export const ViewToggle: typeof import("../components/ViewToggle.vue")['default']
 export const NuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome")['default']
 export const NuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const NuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary")['default']
@@ -101,6 +125,14 @@ export const Html: typeof import("../node_modules/nuxt/dist/head/runtime/compone
 export const Body: typeof import("../node_modules/nuxt/dist/head/runtime/components")['Body']
 export const NuxtIsland: typeof import("../node_modules/nuxt/dist/app/components/nuxt-island")['default']
 export const NuxtRouteAnnouncer: IslandComponent<typeof import("../node_modules/nuxt/dist/app/components/server-placeholder")['default']>
+export const LazyCategoryMicroBanner: typeof import("../components/CategoryMicroBanner.vue")['default']
+export const LazyProductCard: typeof import("../components/ProductCard.vue")['default']
+export const LazyProductCardSkeleton: typeof import("../components/ProductCardSkeleton.vue")['default']
+export const LazyProductPriceBlock: typeof import("../components/ProductPriceBlock.vue")['default']
+export const LazyProductRow: typeof import("../components/ProductRow.vue")['default']
+export const LazyProductRowSkeleton: typeof import("../components/ProductRowSkeleton.vue")['default']
+export const LazyQuickFilterChips: typeof import("../components/QuickFilterChips.vue")['default']
+export const LazyViewToggle: typeof import("../components/ViewToggle.vue")['default']
 export const LazyNuxtWelcome: typeof import("../node_modules/nuxt/dist/app/components/welcome")['default']
 export const LazyNuxtLayout: typeof import("../node_modules/nuxt/dist/app/components/nuxt-layout")['default']
 export const LazyNuxtErrorBoundary: typeof import("../node_modules/nuxt/dist/app/components/nuxt-error-boundary")['default']

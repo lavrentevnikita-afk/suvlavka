@@ -39,6 +39,7 @@ const { data, pending, error } = await useAsyncData('categories', () =>
       >
         <NuxtLink
           :to="`/catalog/${category.slug}`"
+          prefetch
           class="group flex h-full flex-col rounded-lg border border-gray-200 bg-white p-3 text-sm transition hover:border-slate-300"
         >
           <h2 class="font-medium text-gray-900 group-hover:text-brand">

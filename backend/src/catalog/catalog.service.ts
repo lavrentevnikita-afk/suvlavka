@@ -151,6 +151,21 @@ export class CatalogService implements OnModuleInit {
 
     const [items, total] = await qb.getManyAndCount()
 
+    // Derived pricing fields (non-breaking): keep `price` as retail price and
+    // add `retailPrice` + `wholesalePrice` for UI that shows both.
+    // Can be overridden by WHOLESALE_COEF env.
+    const wholesaleCoef = Number(process.env.WHOLESALE_COEF ?? '0.85')
+
+    for (const p of items as any[]) {
+      const retail = Number(p.price)
+      p.retailPrice = p.price
+      if (Number.isFinite(retail)) {
+        p.wholesalePrice = (retail * wholesaleCoef).toFixed(2)
+      } else {
+        p.wholesalePrice = p.price
+      }
+    }
+
     return {
       total,
       page,
@@ -167,6 +182,15 @@ export class CatalogService implements OnModuleInit {
 
     if (!product) {
       throw new NotFoundException('Product not found')
+    }
+
+    const wholesaleCoef = Number(process.env.WHOLESALE_COEF ?? '0.85')
+    const retail = Number((product as any).price)
+    ;(product as any).retailPrice = (product as any).price
+    if (Number.isFinite(retail)) {
+      ;(product as any).wholesalePrice = (retail * wholesaleCoef).toFixed(2)
+    } else {
+      ;(product as any).wholesalePrice = (product as any).price
     }
 
     return { product }
@@ -188,6 +212,17 @@ export class CatalogService implements OnModuleInit {
       take: limit,
       order: { popularity: 'DESC' }
     })
+
+    const wholesaleCoef = Number(process.env.WHOLESALE_COEF ?? '0.85')
+    for (const p of products as any[]) {
+      const retail = Number(p.price)
+      p.retailPrice = p.price
+      if (Number.isFinite(retail)) {
+        p.wholesalePrice = (retail * wholesaleCoef).toFixed(2)
+      } else {
+        p.wholesalePrice = p.price
+      }
+    }
 
     return { products }
   }
