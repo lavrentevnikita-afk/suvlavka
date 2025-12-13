@@ -1,18 +1,155 @@
+<script setup lang="ts">
+import { computed, ref } from 'vue'
+import { useAuthStore } from '~/stores/auth'
+
+const auth = useAuthStore()
+auth.initFromStorage()
+
+const mobileNavOpen = ref(false)
+const userLabel = computed(() => {
+  const u = auth.user
+  if (!u) return 'Гость'
+  return u.name || u.email
+})
+
+const roleLabel = computed(() => {
+  const r = auth.user?.role
+  if (r === 'store') return 'Магазин'
+  if (r === 'manager') return 'Менеджер'
+  return 'Розница'
+})
+
+function logout() {
+  auth.logout()
+  return navigateTo('/login')
+}
+
+const nav = computed(() => {
+  const role = auth.user?.role
+  if (role === 'manager') {
+    return [
+      { to: '/b2b', label: 'Дэшборд', desc: 'Сводка', icon: '▦' },
+      { to: '/b2b/admin/stores', label: 'Заявки магазинов', desc: 'Модерация', icon: '🏪' },
+      { to: '/b2b/admin/orders', label: 'Все заказы', desc: 'Список', icon: '🧾' },
+    ]
+  }
+  // store
+  return [
+    { to: '/b2b', label: 'Дэшборд', desc: 'Сводка', icon: '▦' },
+    { to: '/b2b/settings', label: 'Настройки', desc: 'Профиль магазина', icon: '⚙️' },
+    { to: '/b2b/quick-order', label: 'Быстрый заказ', desc: 'Таблица / импорт', icon: '⚡' },
+    { to: '/b2b/orders', label: 'Заказы', desc: 'История', icon: '🧾' },
+  ]
+})
+</script>
+
 <template>
-  <div class="min-h-screen bg-slate-950 text-slate-50 flex flex-col">
-    <header class="border-b border-slate-800 bg-slate-900/80 backdrop-blur">
-      <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between gap-4">
-        <NuxtLink to="/" class="font-semibold text-sm text-amber-300">Souvenir B2B</NuxtLink>
-        <nav class="flex gap-4 text-xs md:text-sm">
-          <NuxtLink to="/b2b" class="hover:text-amber-300">Главная</NuxtLink>
-          <NuxtLink to="/b2b/quick-order" class="hover:text-amber-300">Быстрый заказ</NuxtLink>
-          <NuxtLink to="/b2b/orders" class="hover:text-amber-300">Заказы</NuxtLink>
-        </nav>
+  <div class="min-h-screen text-slate-900 bg-gray-50">
+    <!-- topbar -->
+    <header class="sticky top-0 z-30 border-b border-gray-200 bg-white/90 backdrop-blur">
+      <div class="mx-auto max-w-7xl px-4 py-3 flex items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+          <button
+            class="md:hidden inline-flex items-center justify-center w-9 h-9 rounded-xl border border-gray-200 hover:bg-gray-100"
+            @click="mobileNavOpen = !mobileNavOpen"
+            aria-label="Открыть меню"
+          >
+            <span class="text-lg">≡</span>
+          </button>
+
+          <NuxtLink to="/b2b" class="flex items-center gap-2">
+            <span class="w-9 h-9 rounded-2xl bg-gradient-to-br from-amber-300/30 to-cyan-400/10 border border-gray-200 flex items-center justify-center">
+              <span class="text-amber-700 font-semibold">B2B</span>
+            </span>
+            <div class="leading-tight">
+              <div class="font-semibold text-sm">Souvenir</div>
+              <div class="text-[11px] text-gray-500">кабинет магазинов</div>
+            </div>
+          </NuxtLink>
+        </div>
+
+        <div class="flex items-center gap-2">
+          <NuxtLink
+            to="/"
+            class="hidden sm:inline-flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-xs"
+          >
+            <span>←</span>
+            <span>В розницу</span>
+          </NuxtLink>
+
+          <div class="hidden md:flex items-center gap-2 px-3 py-2 rounded-xl border border-gray-200 bg-white">
+            <div class="w-8 h-8 rounded-xl bg-gray-100 flex items-center justify-center text-xs">{{ userLabel[0] || 'U' }}</div>
+            <div class="leading-tight">
+              <div class="text-xs font-medium truncate max-w-[180px]">{{ userLabel }}</div>
+              <div class="text-[11px] text-gray-500 flex items-center gap-2">
+                <span class="inline-flex items-center gap-1">
+                  <span class="w-1.5 h-1.5 rounded-full" :class="auth.user?.role === 'store' ? 'bg-emerald-400' : auth.user?.role === 'manager' ? 'bg-sky-400' : 'bg-slate-400'" />
+                  {{ roleLabel }}
+                </span>
+                <button class="hover:text-amber-700" @click="logout">Выйти</button>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </header>
 
-    <main class="flex-1 max-w-6xl mx-auto w-full px-4 py-4">
-      <slot />
-    </main>
+    <div class="mx-auto max-w-7xl px-4 py-4 grid grid-cols-1 md:grid-cols-[280px_1fr] gap-4">
+      <!-- sidebar -->
+      <aside class="md:sticky md:top-[72px] h-fit">
+        <div
+          class="md:block"
+          :class="mobileNavOpen ? 'block' : 'hidden md:block'"
+        >
+          <div class="rounded-2xl border border-gray-200 bg-white overflow-hidden">
+            <div class="p-4 border-b border-gray-200">
+              <div class="text-xs text-gray-500">Навигация</div>
+              <div class="text-sm font-semibold">B2B меню</div>
+            </div>
+
+            <nav class="p-2">
+              <NuxtLink
+                v-for="item in nav"
+                :key="item.to"
+                :to="item.to"
+                class="group flex items-center gap-3 px-3 py-3 rounded-xl hover:bg-gray-100"
+                active-class="bg-gray-100 border border-gray-200"
+                @click="mobileNavOpen = false"
+              >
+                <div class="w-10 h-10 rounded-xl bg-white border border-gray-200 flex items-center justify-center">
+                  <span class="text-lg">{{ item.icon }}</span>
+                </div>
+                <div class="min-w-0">
+                  <div class="text-sm font-medium">{{ item.label }}</div>
+                  <div class="text-[11px] text-gray-500 truncate">{{ item.desc }}</div>
+                </div>
+              </NuxtLink>
+            </nav>
+
+            <div class="p-4 border-t border-gray-200">
+              <div class="rounded-xl bg-gradient-to-br from-white to-gray-50 border border-gray-200 p-3">
+                <div class="text-xs text-gray-700 font-medium">Подсказка</div>
+                <div class="text-[11px] text-gray-500 mt-1">
+                  В B2B цены и интерфейс отличаются от розницы.
+                  Если что-то выглядит “не так” — проверьте роль аккаунта.
+                </div>
+              </div>
+              <div class="md:hidden mt-3">
+                <button class="w-full px-3 py-2 rounded-xl border border-gray-200 hover:bg-gray-100 text-xs" @click="logout">
+                  Выйти
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </aside>
+
+      <!-- content -->
+      <main class="min-w-0">
+        <div class="rounded-2xl border border-gray-200 bg-white p-4 md:p-6">
+          <slot />
+        </div>
+      </main>
+    </div>
   </div>
 </template>

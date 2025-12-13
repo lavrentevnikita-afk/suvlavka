@@ -1,4 +1,7 @@
 <script setup lang="ts">
+const route = useRoute()
+const auth = useAuthStore()
+auth.initFromStorage()
 const props = defineProps<{
   product: any
   mode?: 'retail' | 'b2b'
@@ -9,7 +12,9 @@ const imageUrl = computed(() => props.product?.images?.[0]?.url || null)
 const retailPrice = computed(() => props.product?.retailPrice ?? props.product?.price)
 const wholesalePrice = computed(() => props.product?.wholesalePrice ?? null)
 
-const ctxMode = computed(() => (props.mode === 'b2b' ? 'b2b' : 'retail') as const)
+const ctxMode = computed(() =>
+  ((props.mode === 'b2b') || route.path.startsWith('/b2b') || auth.user?.role === 'store') ? 'b2b' : 'retail'
+)
 const to = computed(() => `/product/${props.product.id}`)
 </script>
 

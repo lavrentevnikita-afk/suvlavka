@@ -19,6 +19,37 @@
         <h2 class="text-lg font-semibold mb-2">Профиль</h2>
         <p><span class="font-medium">Имя:</span> {{ user.name }}</p>
         <p><span class="font-medium">Email:</span> {{ user.email }}</p>
+        <p class="mt-2">
+          <span class="font-medium">Тип аккаунта:</span>
+          <span
+            class="ml-2 inline-flex items-center rounded-full border px-2 py-0.5 text-xs"
+            :class="
+              user.role === 'store'
+                ? 'border-amber-300 bg-amber-50 text-amber-800'
+                : user.role === 'manager'
+                ? 'border-sky-300 bg-sky-50 text-sky-800'
+                : 'border-slate-200 bg-slate-50 text-slate-700'
+            "
+          >
+            {{ roleLabel }}
+          </span>
+
+          <NuxtLink
+            v-if="user.role === 'store' || user.role === 'manager'"
+            to="/b2b"
+            class="ml-3 text-xs text-slate-900 underline"
+          >
+            Перейти в B2B
+          </NuxtLink>
+
+          <NuxtLink
+            v-else
+            to="/b2b/register"
+            class="ml-3 text-xs text-slate-900 underline"
+          >
+            Зарегистрировать магазин
+          </NuxtLink>
+        </p>
       </div>
 
       <div class="mb-4 flex items-center justify-between">
@@ -119,6 +150,13 @@ const authStore = useAuthStore()
 const config = useRuntimeConfig()
 
 const user = computed(() => authStore.user)
+
+const roleLabel = computed(() => {
+  const role = user.value?.role
+  if (role === 'store') return 'Магазин'
+  if (role === 'manager') return 'Менеджер'
+  return 'Розница'
+})
 
 const orders = ref<AccountOrder[]>([])
 const loading = ref(false)

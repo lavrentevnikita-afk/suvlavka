@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
+const auth = useAuthStore()
+auth.initFromStorage()
 const config = useRuntimeConfig()
 const apiBaseUrl = process.server
   ? config.apiBaseUrl
@@ -22,7 +24,9 @@ const { data, pending, error } = await useAsyncData(
 const product = computed(() => data.value?.product ?? null)
 
 // Pricing mode: in B2B area show wholesale first
-const priceMode = computed(() => (route.path.startsWith('/b2b') ? 'b2b' : 'retail'))
+const priceMode = computed(() =>
+  (route.path.startsWith('/b2b') || auth.user?.role === 'store') ? 'b2b' : 'retail'
+)
 
 const retailPrice = computed(() => product.value?.retailPrice ?? product.value?.price)
 const wholesalePrice = computed(() => product.value?.wholesalePrice ?? null)

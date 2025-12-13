@@ -1,4 +1,14 @@
-import { Body, Controller, Get, Param, Post, Req, UseGuards } from '@nestjs/common'
+import {
+  Body,
+  Controller,
+  Get,
+  Param,
+  Post,
+  Put,
+  Query,
+  Req,
+  UseGuards,
+} from '@nestjs/common'
 import { JwtAuthGuard } from '../auth/jwt-auth.guard'
 import { B2bService } from './b2b.service'
 
@@ -17,6 +27,20 @@ export class B2bController {
   @Get('me')
   me(@Req() req: any) {
     return this.b2bService.getMe(req.user)
+  }
+
+  // обновление настроек магазина
+  @UseGuards(JwtAuthGuard)
+  @Put('profile')
+  updateProfile(@Req() req: any, @Body() dto: any) {
+    return this.b2bService.updateProfile(req.user, dto)
+  }
+
+  // список заявок/магазинов (для менеджера)
+  @UseGuards(JwtAuthGuard)
+  @Get('admin/stores')
+  adminStores(@Req() req: any, @Query('status') status?: string) {
+    return this.b2bService.listStoresForManager(req.user, status)
   }
 
   // активация менеджером

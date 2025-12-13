@@ -8,6 +8,10 @@ const authStore = useAuthStore()
 const cartCount = computed(() => cartStore.totalItems)
 const isAuthenticated = computed(() => authStore.isAuthenticated)
 const currentUser = computed(() => authStore.user)
+const isB2BUser = computed(() => {
+  const role = currentUser.value?.role
+  return role === 'store' || role === 'manager'
+})
 
 onMounted(() => {
   cartStore.initFromStorage()
@@ -56,6 +60,7 @@ function onLogout() {
               Каталог
             </NuxtLink>
             <NuxtLink
+              v-if="isB2BUser"
               to="/b2b"
               class="hover:text-slate-900 transition-colors"
               active-class="text-slate-900"

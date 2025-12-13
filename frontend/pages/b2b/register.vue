@@ -38,7 +38,11 @@ async function submit() {
         ogrn: form.ogrn || undefined,
       },
     })
+    // Автологин после регистрации магазина
+    await auth.login(form.email, form.password)
     success.value = true
+    // Ведём сразу в настройки, чтобы добить профиль (лого, адрес и т.д.)
+    await navigateTo('/b2b/settings')
   } catch (e: any) {
     error.value = e?.data?.message || 'Не удалось отправить заявку'
   } finally {
@@ -49,32 +53,106 @@ async function submit() {
 
 <template>
   <NuxtLayout name="b2b">
-    <section class="max-w-xl space-y-3">
-      <h1 class="text-xl font-semibold">Регистрация магазина</h1>
-      <p class="text-sm text-slate-300">
-        Заявка будет в статусе “на модерации”, пока менеджер не активирует доступ.
-      </p>
+    <section class="space-y-6">
+      <div>
+        <h1 class="text-2xl font-semibold">Регистрация магазина</h1>
+        <p class="text-sm text-gray-600 mt-1">
+          Заполните данные — заявка уйдёт менеджеру. До активации доступ будет в статусе “на модерации”.
+        </p>
+      </div>
 
-      <div v-if="error" class="text-sm text-red-300">{{ error }}</div>
-      <div v-if="success" class="text-sm text-green-300">
+      <div v-if="error" class="rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700">
+        {{ error }}
+      </div>
+      <div v-if="success" class="rounded-xl border border-emerald-200 bg-emerald-50 px-4 py-3 text-sm text-emerald-700">
         Заявка отправлена. Ожидайте активации менеджером.
       </div>
 
-      <form class="space-y-2" @submit.prevent="submit">
-        <input v-model="form.name" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="Контактное имя" />
-        <input v-model="form.email" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="Email" />
-        <input v-model="form.password" type="password" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="Пароль" />
+      <form class="grid grid-cols-1 lg:grid-cols-2 gap-3" @submit.prevent="submit">
+        <div class="lg:col-span-2 rounded-2xl border border-gray-200 bg-white p-4">
+          <div class="text-sm font-semibold">Контакт</div>
+          <div class="text-xs text-gray-500 mt-1">Данные для связи и входа</div>
 
-        <div class="pt-2 border-t border-slate-800"></div>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div class="md:col-span-1">
+              <label class="text-xs text-gray-500">Контактное имя</label>
+              <input
+                v-model="form.name"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder="Например, Никита"
+              />
+            </div>
+            <div class="md:col-span-1">
+              <label class="text-xs text-gray-500">Email</label>
+              <input
+                v-model="form.email"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder="email@company.ru"
+              />
+            </div>
+            <div class="md:col-span-1">
+              <label class="text-xs text-gray-500">Пароль</label>
+              <input
+                v-model="form.password"
+                type="password"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder="••••••••"
+              />
+            </div>
+          </div>
+        </div>
 
-        <input v-model="form.companyName" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="Название организации" />
-        <input v-model="form.inn" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="ИНН (необязательно)" />
-        <input v-model="form.kpp" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="КПП (необязательно)" />
-        <input v-model="form.ogrn" class="w-full px-3 py-2 rounded bg-slate-900 border border-slate-800" placeholder="ОГРН (необязательно)" />
+        <div class="lg:col-span-2 rounded-2xl border border-gray-200 bg-white p-4">
+          <div class="text-sm font-semibold">Реквизиты</div>
+          <div class="text-xs text-gray-500 mt-1">Можно заполнить минимум, остальное — позже</div>
 
-        <button :disabled="loading" class="px-4 py-2 rounded bg-amber-400 text-slate-900 font-semibold disabled:opacity-50">
-          {{ loading ? 'Отправка…' : 'Отправить заявку' }}
-        </button>
+          <div class="mt-4 grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="md:col-span-2">
+              <label class="text-xs text-gray-500">Название организации</label>
+              <input
+                v-model="form.companyName"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder='ООО "Ромашка"'
+              />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">ИНН (необязательно)</label>
+              <input
+                v-model="form.inn"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder="1234567890"
+              />
+            </div>
+            <div>
+              <label class="text-xs text-gray-500">КПП (необязательно)</label>
+              <input
+                v-model="form.kpp"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder="123456789"
+              />
+            </div>
+            <div class="md:col-span-2">
+              <label class="text-xs text-gray-500">ОГРН (необязательно)</label>
+              <input
+                v-model="form.ogrn"
+                class="mt-1 w-full px-3 py-2 rounded-xl bg-white border border-gray-200 outline-none focus:border-amber-400"
+                placeholder="1234567890123"
+              />
+            </div>
+          </div>
+        </div>
+
+        <div class="lg:col-span-2 flex flex-col sm:flex-row sm:items-center gap-2">
+          <button
+            :disabled="loading"
+            class="inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-amber-300 text-slate-900 font-semibold disabled:opacity-50"
+          >
+            {{ loading ? 'Отправка…' : 'Отправить заявку' }}
+          </button>
+          <NuxtLink to="/login" class="px-5 py-3 rounded-xl border border-gray-200 hover:bg-gray-100 text-sm text-center">
+            Уже есть аккаунт? Войти
+          </NuxtLink>
+        </div>
       </form>
     </section>
   </NuxtLayout>

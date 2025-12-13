@@ -40,6 +40,17 @@ export class OrdersController {
     return { orders }
   }
 
+  // Админ: все заказы (для менеджера)
+  @UseGuards(JwtAuthGuard)
+  @Get('admin/all')
+  async adminAll(@Req() req: any) {
+    if (req?.user?.role !== 'manager') {
+      throw new NotFoundException('Not found')
+    }
+    const orders = await this.ordersService.findAll()
+    return { orders }
+  }
+
   // один заказ по id
   @UseGuards(JwtAuthGuard)
   @Get(':id')
@@ -53,7 +64,8 @@ export class OrdersController {
     const normalizedTokenEmail = tokenEmail?.trim().toLowerCase()
 
     // В MVP прячем чужие заказы (как будто не существует)
-    if (normalizedTokenEmail && order.email !== normalizedTokenEmail) {
+    // менеджер может смотреть всё
+    if (req?.user?.role !== 'manager' && normalizedTokenEmail && order.email !== normalizedTokenEmail) {
       throw new NotFoundException('Order not found')
     }
 

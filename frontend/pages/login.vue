@@ -77,5 +77,6 @@ const onSubmit = async () => {
         Зарегистрироваться
       </NuxtLink>
     </p>
+
   </section>
 </template>

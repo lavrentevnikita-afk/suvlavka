@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
+const auth = useAuthStore()
+auth.initFromStorage()
 
 const props = defineProps<{
   product: any
@@ -15,7 +17,9 @@ function derive(url: string, ext: 'avif' | 'webp') {
 
 const imgAvif = computed(() => (imageUrl.value ? derive(imageUrl.value, 'avif') : null))
 const imgWebp = computed(() => (imageUrl.value ? derive(imageUrl.value, 'webp') : null))
-const isB2B = computed(() => props.mode === 'b2b')
+const isB2B = computed(() =>
+  (props.mode === 'b2b') || route.path.startsWith('/b2b') || auth.user?.role === 'store'
+)
 
 const retailPrice = computed(() => props.product?.retailPrice ?? props.product?.price)
 const wholesalePrice = computed(() => props.product?.wholesalePrice ?? null)

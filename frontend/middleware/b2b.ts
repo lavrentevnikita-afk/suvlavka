@@ -16,8 +16,8 @@ export default defineNuxtRouteMiddleware(async () => {
     return navigateTo('/login')
   }
 
-  if (auth.user?.role !== 'store') {
-    // не магазин — не пускаем в B2B
+  if (auth.user?.role !== 'store' && auth.user?.role !== 'manager') {
+    // не магазин и не менеджер — не пускаем в B2B
     return navigateTo('/')
   }
 })

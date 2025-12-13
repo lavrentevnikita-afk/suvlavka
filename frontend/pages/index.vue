@@ -25,12 +25,12 @@ const config = useRuntimeConfig()
       </article>
 
       <article class="rounded-xl border border-gray-200 bg-white p-4 shadow-sm">
-        <h2 class="font-semibold mb-1">B2B-кабинет</h2>
+        <h2 class="font-semibold mb-1">Магазинам</h2>
         <p class="text-sm text-gray-600">
-          Быстрый заказ и история закупок для магазинов, с индивидуальными ценами.
+          Зарегистрируйте магазин, чтобы получать оптовые цены и доступ в B2B‑кабинет.
         </p>
-        <NuxtLink to="/b2b" class="inline-flex mt-3 items-center px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-medium">
-          Перейти в B2B
+        <NuxtLink to="/b2b/register" class="inline-flex mt-3 items-center px-3 py-1.5 rounded-full bg-slate-900 text-white text-xs font-medium">
+          Регистрация магазина
         </NuxtLink>
       </article>
     </div>

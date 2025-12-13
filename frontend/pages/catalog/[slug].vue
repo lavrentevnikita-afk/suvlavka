@@ -1,5 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
+const auth = useAuthStore()
+auth.initFromStorage()
 const router = useRouter()
 const config = useRuntimeConfig()
 
@@ -17,7 +19,9 @@ const sort = ref((route.query.sort as string) || 'popularity')
 const { mode } = useCatalogViewMode()
 
 // Price mode (retail/b2b) – simple context rule: B2B area shows wholesale first.
-const priceMode = computed(() => (route.path.startsWith('/b2b') ? 'b2b' : 'retail'))
+const priceMode = computed(() =>
+  (route.path.startsWith('/b2b') || auth.user?.role === 'store') ? 'b2b' : 'retail'
+)
 
 const buildQuery = () => {
   const query: Record<string, string> = {

@@ -19,6 +19,26 @@ export class StoreProfile {
   @Column({ name: 'company_name', type: 'varchar', length: 255 })
   companyName!: string
 
+  // Публичные данные (для кабинета / отображения)
+  @Column({ name: 'display_name', type: 'varchar', length: 255, nullable: true })
+  displayName: string | null = null
+
+  // Лого можно хранить как URL или data-url (base64)
+  @Column({ name: 'logo_url', type: 'text', nullable: true })
+  logoUrl: string | null = null
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  address: string | null = null
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  city: string | null = null
+
+  @Column({ type: 'varchar', length: 80, nullable: true })
+  phone: string | null = null
+
+  @Column({ type: 'varchar', length: 180, nullable: true })
+  website: string | null = null
+
   @Column({ type: 'varchar', length: 32, nullable: true })
   inn: string | null = null
 
