@@ -26,8 +26,9 @@ export class CreateOrderDto {
   @MinLength(2)
   customerName!: string  // <-- ИМЯ КЛИЕНТА ТУТ
 
+  @IsOptional()
   @IsEmail()
-  email!: string
+  email?: string
 
   @IsString()
   @MinLength(5)

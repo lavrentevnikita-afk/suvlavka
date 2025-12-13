@@ -1,5 +1,6 @@
 <script setup lang="ts">
 const cartStore = useCartStore()
+const authStore = useAuthStore()
 const router = useRouter()
 const config = useRuntimeConfig()
 
@@ -17,6 +18,12 @@ const errorMessage = ref<string | null>(null)
 const hasItems = computed(() => !cartStore.isEmpty)
 
 async function submitOrder() {
+  if (!authStore.accessToken) {
+    errorMessage.value = 'Нужно войти в аккаунт, чтобы оформить заказ.'
+    router.push('/login')
+    return
+  }
+
   if (!hasItems.value) {
     errorMessage.value = 'Корзина пуста. Добавьте товары перед оформлением заказа.'
     return
@@ -29,7 +36,8 @@ async function submitOrder() {
     const body = {
       customerName: form.name,
       phone: form.phone,
-      email: form.email || undefined,
+      // email берём из формы, а если пусто — из токена
+      email: form.email || authStore.user?.email || undefined,
       address: form.address,
       comment: form.comment || undefined,
       items: cartStore.items.map((item) => ({
@@ -38,14 +46,17 @@ async function submitOrder() {
       }))
     }
 
-    const response = await $fetch<{ order: { id: number } }>('/api/orders', {
+    const response = await $fetch<{ id: number }>('/api/orders', {
       baseURL: config.public.apiBaseUrl,
       method: 'POST',
-      body
+      body,
+      headers: {
+        Authorization: `Bearer ${authStore.accessToken}`,
+      },
     })
 
     cartStore.clear()
-    router.push(`/order/${response.order.id}`)
+    router.push(`/order/${response.id}`)
   } catch (error: any) {
     // Nuxt / ofetch error shape
     const message =

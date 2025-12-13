@@ -1,6 +1,7 @@
 <script setup lang="ts">
 const route = useRoute()
 const config = useRuntimeConfig()
+const authStore = useAuthStore()
 
 const id = computed(() => Number(route.params.id))
 
@@ -12,7 +13,10 @@ const { data, pending, error } = await useAsyncData(
   'order', // <-- простой строковый ключ
   () =>
     $fetch(`/api/orders/${id.value}`, {
-      baseURL: apiBaseUrl
+      baseURL: apiBaseUrl,
+      headers: authStore.accessToken
+        ? { Authorization: `Bearer ${authStore.accessToken}` }
+        : undefined,
     }),
   { watch: [id] }
 )

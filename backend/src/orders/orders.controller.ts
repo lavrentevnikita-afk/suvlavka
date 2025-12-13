@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Get,
+  NotFoundException,
   Param,
   ParseIntPipe,
   Post,
@@ -18,8 +19,16 @@ export class OrdersController {
 
   // создание заказа
   @Post()
-  create(@Body() dto: CreateOrderDto) {
-    return this.ordersService.create(dto)
+  @UseGuards(JwtAuthGuard)
+  create(@Body() dto: CreateOrderDto, @Req() req: any) {
+    // Привязываем заказ к email из токена, чтобы он гарантированно отображался в кабинете
+    const emailFromToken: string | undefined = req?.user?.email
+    const normalizedEmail = emailFromToken?.trim().toLowerCase()
+
+    return this.ordersService.create({
+      ...dto,
+      email: normalizedEmail ?? dto.email,
+    })
   }
 
   // Мои заказы (по email из токена)
@@ -34,8 +43,20 @@ export class OrdersController {
   // один заказ по id
   @UseGuards(JwtAuthGuard)
   @Get(':id')
-  async getOne(@Param('id', ParseIntPipe) id: number) {
+  async getOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Req() req: any,
+  ) {
     const order = await this.ordersService.getOne(id)
+
+    const tokenEmail: string | undefined = req?.user?.email
+    const normalizedTokenEmail = tokenEmail?.trim().toLowerCase()
+
+    // В MVP прячем чужие заказы (как будто не существует)
+    if (normalizedTokenEmail && order.email !== normalizedTokenEmail) {
+      throw new NotFoundException('Order not found')
+    }
+
     return { order }
   }
 }

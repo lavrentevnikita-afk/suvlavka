@@ -23,6 +23,11 @@ export class OrdersService {
       throw new BadRequestException('Order must contain at least one item')
     }
 
+    const normalizedEmail = (dto.email ?? '').trim().toLowerCase()
+    if (!normalizedEmail) {
+      throw new BadRequestException('Email is required to create an order')
+    }
+
     const productIds = dto.items.map((i) => i.productId)
 
     const products = await this.productsRepository.find({
@@ -60,7 +65,7 @@ export class OrdersService {
 
     const order = this.ordersRepository.create({
       customerName: dto.customerName,   // <-- ИСПОЛЬЗУЕМ customerName ИЗ DTO
-      email: dto.email,
+      email: normalizedEmail,
       address: dto.address,
       comment: dto.comment ?? null,
       totalPrice: totalPriceNumber.toFixed(2),

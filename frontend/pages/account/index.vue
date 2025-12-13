@@ -80,7 +80,16 @@
           </div>
 
           <div class="mt-2 text-xs text-slate-500">
-            Для: {{ order.customerName }} ({{ order.customerEmail }})
+            Для: {{ order.customerName }} ({{ order.email }})
+          </div>
+
+          <div class="mt-3">
+            <NuxtLink
+              :to="`/order/${order.id}`"
+              class="inline-flex items-center rounded-full bg-slate-900 px-4 py-1.5 text-xs font-medium text-white"
+            >
+              Открыть чек
+            </NuxtLink>
           </div>
         </div>
       </div>
@@ -92,7 +101,7 @@
 interface AccountOrder {
   id: number
   customerName: string
-  customerEmail: string
+  email: string
   address: string
   comment?: string | null
   totalPrice: string
