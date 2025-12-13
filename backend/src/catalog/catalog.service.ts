@@ -4,8 +4,19 @@ import { ILike, Repository } from 'typeorm'
 import { Category } from './category.entity'
 import { Product } from './product.entity'
 import { ProductImage } from './product-image.entity'
-import { GetProductsQueryDto, SearchQueryDto } from './dto'
+import {
+  GetProductsQueryDto,
+  SearchQueryDto,
+  CreateCategoryDto,
+  UpdateCategoryDto,
+  CreateProductDto,
+  UpdateProductDto,
+  AdminProductsQueryDto,
+  UpdateImageDto,
+} from './dto'
 import { Stock } from '../b2b/stock.entity'
+import * as fs from 'fs'
+import { join } from 'path'
 
 @Injectable()
 export class CatalogService implements OnModuleInit {
@@ -261,5 +272,182 @@ export class CatalogService implements OnModuleInit {
     }
 
     return { products }
+  }
+
+  // ----------------------
+  // Admin catalog (manager)
+  // ----------------------
+
+  async createCategory(dto: CreateCategoryDto) {
+    const category = this.categoriesRepo.create({
+      slug: dto.slug,
+      name: dto.name,
+      description: dto.description ?? null,
+    })
+    await this.categoriesRepo.save(category)
+    return { category }
+  }
+
+  async updateCategory(id: number, dto: UpdateCategoryDto) {
+    const category = await this.categoriesRepo.findOne({ where: { id } })
+    if (!category) throw new NotFoundException('Category not found')
+
+    if (typeof dto.slug === 'string') category.slug = dto.slug
+    if (typeof dto.name === 'string') category.name = dto.name
+    if (dto.description !== undefined) category.description = dto.description ?? null
+
+    await this.categoriesRepo.save(category)
+    return { category }
+  }
+
+  async deleteCategory(id: number) {
+    const category = await this.categoriesRepo.findOne({ where: { id } })
+    if (!category) throw new NotFoundException('Category not found')
+
+    // Не удаляем, если есть товары — чтобы случайно не «сломать» каталог.
+    const productsCount = await this.productsRepo.count({ where: { category: { id } as any } })
+    if (productsCount > 0) {
+      return {
+        ok: false,
+        message: 'Нельзя удалить категорию с товарами. Сначала перенесите товары или удалите их.',
+      }
+    }
+
+    await this.categoriesRepo.remove(category)
+    return { ok: true }
+  }
+
+  async adminListProducts(query: AdminProductsQueryDto) {
+    const qb = this.productsRepo
+      .createQueryBuilder('product')
+      .leftJoinAndSelect('product.category', 'category')
+      .leftJoinAndSelect('product.images', 'images')
+
+    if (query.categoryId) {
+      qb.andWhere('category.id = :cid', { cid: query.categoryId })
+    }
+
+    if (query.q) {
+      const q = String(query.q).trim()
+      if (q) {
+        qb.andWhere(
+          '(product.name ILIKE :q OR product.article ILIKE :q OR product.slug ILIKE :q)',
+          { q: `%${q}%` },
+        )
+      }
+    }
+
+    qb.orderBy('product.id', 'DESC')
+
+    const limit = query.limit ?? 50
+    const page = query.page ?? 1
+    qb.take(limit).skip((page - 1) * limit)
+
+    const [items, total] = await qb.getManyAndCount()
+    return { total, page, limit, products: items }
+  }
+
+  async createProduct(dto: CreateProductDto) {
+    const category = await this.categoriesRepo.findOne({ where: { id: dto.categoryId } })
+    if (!category) throw new NotFoundException('Category not found')
+
+    const product = this.productsRepo.create({
+      slug: dto.slug,
+      name: dto.name,
+      article: dto.article,
+      price: dto.price,
+      description: dto.description ?? null,
+      specs: dto.specs ?? null,
+      isAvailable: dto.isAvailable ?? true,
+      category,
+      popularity: 0,
+    })
+
+    await this.productsRepo.save(product)
+    const saved = await this.productsRepo.findOne({ where: { id: product.id }, relations: ['category', 'images'] })
+    return { product: saved }
+  }
+
+  async updateProduct(id: number, dto: UpdateProductDto) {
+    const product = await this.productsRepo.findOne({ where: { id }, relations: ['category', 'images'] })
+    if (!product) throw new NotFoundException('Product not found')
+
+    if (typeof dto.slug === 'string') product.slug = dto.slug
+    if (typeof dto.name === 'string') product.name = dto.name
+    if (typeof dto.article === 'string') product.article = dto.article
+    if (typeof dto.price === 'string') product.price = dto.price
+    if (dto.description !== undefined) product.description = dto.description ?? null
+    if (dto.specs !== undefined) product.specs = dto.specs ?? null
+    if (typeof dto.isAvailable === 'boolean') product.isAvailable = dto.isAvailable
+
+    if (dto.categoryId) {
+      const category = await this.categoriesRepo.findOne({ where: { id: dto.categoryId } })
+      if (!category) throw new NotFoundException('Category not found')
+      product.category = category
+    }
+
+    await this.productsRepo.save(product)
+    const saved = await this.productsRepo.findOne({ where: { id }, relations: ['category', 'images'] })
+    return { product: saved }
+  }
+
+  async deleteProduct(id: number) {
+    const product = await this.productsRepo.findOne({ where: { id }, relations: ['images'] })
+    if (!product) throw new NotFoundException('Product not found')
+
+    // удаляем локальные файлы (если это наши uploads)
+    for (const img of product.images || []) {
+      this.tryDeleteLocalUpload(img.url)
+    }
+
+    await this.productsRepo.remove(product)
+    return { ok: true }
+  }
+
+ async uploadProductImage(productId: number, file: any) {
+    if (!file) {
+      return { ok: false, message: 'Файл не получен' }
+    }
+
+    const product = await this.productsRepo.findOne({ where: { id: productId }, relations: ['images'] })
+    if (!product) throw new NotFoundException('Product not found')
+
+    const currentMax = Math.max(0, ...(product.images || []).map((i) => Number(i.sortOrder) || 0))
+    const url = `/uploads/products/${file.filename}`
+    const image = this.imagesRepo.create({
+      product,
+      url,
+      sortOrder: currentMax + 1,
+    })
+    await this.imagesRepo.save(image)
+    const saved = await this.productsRepo.findOne({ where: { id: productId }, relations: ['category', 'images'] })
+    return { product: saved }
+  }
+
+  async updateImage(id: number, dto: UpdateImageDto) {
+    const image = await this.imagesRepo.findOne({ where: { id }, relations: ['product'] })
+    if (!image) throw new NotFoundException('Image not found')
+    if (dto.sortOrder !== undefined) image.sortOrder = dto.sortOrder
+    await this.imagesRepo.save(image)
+    return { image }
+  }
+
+  async deleteImage(id: number) {
+    const image = await this.imagesRepo.findOne({ where: { id } })
+    if (!image) throw new NotFoundException('Image not found')
+    this.tryDeleteLocalUpload(image.url)
+    await this.imagesRepo.remove(image)
+    return { ok: true }
+  }
+
+  private tryDeleteLocalUpload(url: string) {
+    try {
+      if (!url || !url.startsWith('/uploads/')) return
+      const rel = url.replace('/uploads/', '')
+      const abs = join(process.cwd(), 'uploads', rel)
+      if (fs.existsSync(abs)) fs.unlinkSync(abs)
+    } catch {
+      // игнорируем ошибки удаления — это не должно ломать удаление товара
+    }
   }
 }

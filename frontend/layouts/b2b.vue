@@ -29,6 +29,7 @@ const nav = computed(() => {
   if (role === 'manager') {
     return [
       { to: '/b2b', label: 'Дэшборд', desc: 'Сводка', icon: '▦' },
+      { to: '/b2b/admin/catalog', label: 'Каталог', desc: 'Категории и товары', icon: '🗂️' },
       { to: '/b2b/admin/stores', label: 'Заявки магазинов', desc: 'Модерация', icon: '🏪' },
       { to: '/b2b/admin/orders', label: 'Все заказы', desc: 'Список', icon: '🧾' },
       { to: '/b2b/admin/in-work', label: 'В работе', desc: 'Сборка заказов', icon: '🛠️' },

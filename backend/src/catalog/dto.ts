@@ -1,5 +1,19 @@
-import { IsBooleanString, IsInt, IsOptional, IsPositive, IsString, Max, Min } from 'class-validator'
+import {
+  IsBoolean,
+  IsBooleanString,
+  IsInt,
+  IsNumberString,
+  IsOptional,
+  IsString,
+  Max,
+  Min,
+  ValidateNested,
+} from 'class-validator'
 import { Type } from 'class-transformer'
+
+// ----------------------
+// Public catalog DTOs
+// ----------------------
 
 export class GetProductsQueryDto {
   @IsString()
@@ -58,4 +72,131 @@ export class SearchQueryDto {
   @IsOptional()
   @IsString()
   city?: string
+}
+
+// ----------------------
+// Admin catalog DTOs (manager)
+// ----------------------
+
+export class CreateCategoryDto {
+  @IsString()
+  slug!: string
+
+  @IsString()
+  name!: string
+
+  @IsOptional()
+  @IsString()
+  description?: string
+}
+
+export class UpdateCategoryDto {
+  @IsOptional()
+  @IsString()
+  slug?: string
+
+  @IsOptional()
+  @IsString()
+  name?: string
+
+  @IsOptional()
+  @IsString()
+  description?: string
+}
+
+export class CreateProductDto {
+  @IsString()
+  slug!: string
+
+  @IsString()
+  name!: string
+
+  @IsString()
+  article!: string
+
+  // numeric string: keep compatible with existing Product.price string
+  @IsNumberString()
+  price!: string
+
+  @IsInt()
+  @Type(() => Number)
+  categoryId!: number
+
+  @IsOptional()
+  @IsString()
+  description?: string
+
+  @IsOptional()
+  specs?: Record<string, string>
+
+  @IsOptional()
+  @IsBoolean()
+  isAvailable?: boolean
+}
+
+export class UpdateProductDto {
+  @IsOptional()
+  @IsString()
+  slug?: string
+
+  @IsOptional()
+  @IsString()
+  name?: string
+
+  @IsOptional()
+  @IsString()
+  article?: string
+
+  @IsOptional()
+  @IsNumberString()
+  price?: string
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  categoryId?: number
+
+  @IsOptional()
+  @IsString()
+  description?: string
+
+  @IsOptional()
+  specs?: Record<string, string>
+
+  @IsOptional()
+  @IsBoolean()
+  isAvailable?: boolean
+}
+
+export class AdminProductsQueryDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  categoryId?: number
+
+  @IsOptional()
+  @IsString()
+  q?: string
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  @Max(200)
+  limit?: number
+
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(1)
+  page?: number
+}
+
+export class UpdateImageDto {
+  @IsOptional()
+  @Type(() => Number)
+  @IsInt()
+  @Min(0)
+  sortOrder?: number
 }

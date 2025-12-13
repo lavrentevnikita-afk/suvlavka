@@ -634,6 +634,18 @@ const _inlineRuntimeConfig = {
       "/__nuxt_error": {
         "cache": false
       },
+      "/uploads/**": {
+        "proxy": {
+          "to": "http://localhost:4000/uploads/**",
+          "_proxyStripBase": "/uploads"
+        }
+      },
+      "/api/**": {
+        "proxy": {
+          "to": "http://localhost:4000/api/**",
+          "_proxyStripBase": "/api"
+        }
+      },
       "/_nuxt/builds/meta/**": {
         "headers": {
           "cache-control": "public, max-age=31536000, immutable"
@@ -1146,15 +1158,15 @@ _eatWhQj7AmXOqcvOZRJh0LlT_NLhqFNsryt2uhcmmTM
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"11eaa-YdpkuwXqpPJEcaUhiwtN6UnwjSE\"",
-    "mtime": "2025-12-13T16:56:20.078Z",
+    "etag": "\"11eaa-PQENf7MO9rVtPAofUISx8ChnR7U\"",
+    "mtime": "2025-12-13T18:00:02.033Z",
     "size": 73386,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
     "etag": "\"455b2-cc6XX4bgqz6E6vfqlC2EtRidBSk\"",
-    "mtime": "2025-12-13T16:56:20.094Z",
+    "mtime": "2025-12-13T18:00:02.034Z",
     "size": 284082,
     "path": "index.mjs.map"
   }

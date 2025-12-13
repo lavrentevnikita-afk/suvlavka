@@ -14,19 +14,26 @@ export default defineNuxtConfig({
     typeCheck: false
   },
 
-    runtimeConfig: {
-      // 👇 будет использоваться на сервере (SSR, Nitro)
-      apiBaseUrl: process.env.NUXT_API_BASE_URL || 'http://backend:4000',
-
-      // 👇 а это — в браузере
-      public: {
-        apiBaseUrl:
-          // По умолчанию backend у нас проброшен на хост:4000 (см. docker-compose.yml)
-          process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:4000',
-        appName: process.env.NUXT_PUBLIC_APP_NAME || 'Souvenir Shop',
-        pwaEnabled: process.env.NUXT_PUBLIC_PWA_ENABLED !== 'false'
-      }
+  // ✅ ВОТ СЮДА ДОБАВЛЯЕМ
+  routeRules: {
+    '/uploads/**': {
+      proxy: 'http://localhost:4000/uploads/**'
     },
+    '/api/**': {
+      proxy: 'http://localhost:4000/api/**'
+    }
+  },
+
+  runtimeConfig: {
+    apiBaseUrl: process.env.NUXT_API_BASE_URL || 'http://backend:4000',
+
+    public: {
+      apiBaseUrl:
+        process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:4000',
+      appName: process.env.NUXT_PUBLIC_APP_NAME || 'Souvenir Shop',
+      pwaEnabled: process.env.NUXT_PUBLIC_PWA_ENABLED !== 'false'
+    }
+  },
 
   app: {
     head: {
@@ -45,7 +52,7 @@ export default defineNuxtConfig({
       start_url: '/',
       display: 'standalone',
       background_color: '#ffffff',
-      theme_color: '#ff7a00',
+      theme_color: '#3659fa',
       icons: [
         {
           src: '/icons/icon-192x192.png',
