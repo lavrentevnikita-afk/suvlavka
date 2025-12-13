@@ -31,6 +31,9 @@ const nav = computed(() => {
       { to: '/b2b', label: 'Дэшборд', desc: 'Сводка', icon: '▦' },
       { to: '/b2b/admin/stores', label: 'Заявки магазинов', desc: 'Модерация', icon: '🏪' },
       { to: '/b2b/admin/orders', label: 'Все заказы', desc: 'Список', icon: '🧾' },
+      { to: '/b2b/admin/in-work', label: 'В работе', desc: 'Сборка заказов', icon: '🛠️' },
+      { to: '/b2b/admin/warehouse', label: 'Склад', desc: 'Остатки и движения', icon: '📦' },
+      { to: '/b2b/admin/production', label: 'Производство', desc: 'Задачи под заказ', icon: '🏭' },
     ]
   }
   // store

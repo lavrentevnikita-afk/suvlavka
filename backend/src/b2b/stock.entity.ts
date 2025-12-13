@@ -15,4 +15,11 @@ export class Stock {
 
   @Column({ type: 'int', default: 0 })
   qty!: number
+
+  // Этап 4: резервы и под заказ (nullable/default чтобы не ломать старую БД)
+  @Column({ type: 'int', default: 0 })
+  reservedQty!: number
+
+  @Column({ type: 'int', default: 0 })
+  onOrderQty!: number
 }

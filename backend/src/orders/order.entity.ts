@@ -33,6 +33,13 @@ export class Order {
   @Column({ default: 'new' })
   status!: string
 
+  // Этап 4: операционка (nullable, чтобы не ломать старые записи)
+  @Column({ type: 'timestamptz', nullable: true })
+  shippedAt!: Date | null
+
+  @Column({ type: 'timestamptz', nullable: true })
+  closedAt!: Date | null
+
   @Column({ type: 'jsonb' })
   items!: OrderItemRecord[]
 

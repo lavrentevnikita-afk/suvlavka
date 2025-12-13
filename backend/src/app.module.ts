@@ -8,6 +8,7 @@ import { OrdersModule } from './orders/orders.module'
 import { UsersModule } from './users/users.module'
 import { AuthModule } from './auth/auth.module'
 import { B2bModule } from './b2b/b2b.module'
+import { OpsModule } from './ops/ops.module'
 
 
 @Module({
@@ -32,6 +33,7 @@ import { B2bModule } from './b2b/b2b.module'
     UsersModule,
     AuthModule,
     B2bModule,
+    OpsModule,
 
   ],
   controllers: [AppController],
