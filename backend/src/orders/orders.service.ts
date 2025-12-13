@@ -88,14 +88,9 @@ export class OrdersService {
   }
 
   async getForEmail(email: string): Promise<Order[]> {
+    const normalizedEmail = email.trim().toLowerCase()
     return this.ordersRepository.find({
-      where: { customerEmail: email },
-      order: { createdAt: 'DESC' },
-    })
-  }
-
-  async findAll(): Promise<Order[]> {
-    return this.ordersRepository.find({
+      where: { email: normalizedEmail },
       order: { createdAt: 'DESC' },
     })
   }

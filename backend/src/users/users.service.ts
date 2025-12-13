@@ -15,7 +15,8 @@ export class UsersService {
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    return this.usersRepository.findOne({ where: { email } })
+    const normalized = email.trim().toLowerCase()
+    return this.usersRepository.findOne({ where: { email: normalized } })
   }
 
   async create(data: {

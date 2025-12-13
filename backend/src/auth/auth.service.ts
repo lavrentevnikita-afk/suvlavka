@@ -41,7 +41,10 @@ export class AuthService {
   }
 
   async register(dto: RegisterDto) {
-    const existing = await this.usersService.findByEmail(dto.email)
+    // Нормализуем email, чтобы логин/регистрация не ломались из-за регистра/пробелов
+    const email = dto.email.trim().toLowerCase()
+
+    const existing = await this.usersService.findByEmail(email)
     if (existing) {
       throw new BadRequestException('Пользователь с таким email уже существует')
     }
@@ -50,7 +53,7 @@ export class AuthService {
 
     const user = await this.usersService.create({
       name: dto.name,
-      email: dto.email,
+      email,
       passwordHash,
     })
 
@@ -58,7 +61,9 @@ export class AuthService {
   }
 
   async login(dto: LoginDto) {
-    const user = await this.usersService.findByEmail(dto.email)
+    const email = dto.email.trim().toLowerCase()
+
+    const user = await this.usersService.findByEmail(email)
     if (!user) {
       throw new UnauthorizedException('Неверный email или пароль')
     }

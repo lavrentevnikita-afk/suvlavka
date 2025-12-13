@@ -21,7 +21,8 @@ export default defineNuxtConfig({
       // 👇 а это — в браузере
       public: {
         apiBaseUrl:
-          process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:5000',
+          // По умолчанию backend у нас проброшен на хост:4000 (см. docker-compose.yml)
+          process.env.NUXT_PUBLIC_API_BASE_URL || 'http://localhost:4000',
         appName: process.env.NUXT_PUBLIC_APP_NAME || 'Souvenir Shop',
         pwaEnabled: process.env.NUXT_PUBLIC_PWA_ENABLED !== 'false'
       }

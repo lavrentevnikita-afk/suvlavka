@@ -13,7 +13,8 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-souvenir}
       PORT: 4000
     ports:
-      - "5000:4000"
+      # API будет доступен на хосте по http://localhost:4000
+      - "4000:4000"
     volumes:
       - ./backend:/app
       - /app/node_modules
@@ -25,7 +26,8 @@ services:
     command: npm run dev -- --port 3000 --host 0.0.0.0
     working_dir: /app
     environment:
-      NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-http://localhost:5000}
+      # В браузере Nuxt будет ходить в API по http://localhost:4000
+      NUXT_PUBLIC_API_BASE_URL: ${NUXT_PUBLIC_API_BASE_URL:-http://localhost:4000}
       NUXT_API_BASE_URL: ${NUXT_API_BASE_URL:-http://backend:4000}
     ports:
       - "3000:3000"
