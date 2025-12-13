@@ -12,6 +12,8 @@ services:
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-souvenir}
       POSTGRES_DB: ${POSTGRES_DB:-souvenir}
       PORT: 4000
+    env_file:
+      - .env
     ports:
       # API будет доступен на хосте по http://localhost:4000
       - "4000:4000"

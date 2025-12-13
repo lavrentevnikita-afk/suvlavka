@@ -659,7 +659,7 @@ const _inlineRuntimeConfig = {
     }
   },
   "public": {
-    "apiBaseUrl": "http://localhost:5000",
+    "apiBaseUrl": "http://localhost:4000",
     "appName": "Souvenir Shop",
     "pwaEnabled": true
   },
@@ -1158,16 +1158,16 @@ _eatWhQj7AmXOqcvOZRJh0LlT_NLhqFNsryt2uhcmmTM
 const assets = {
   "/index.mjs": {
     "type": "text/javascript; charset=utf-8",
-    "etag": "\"11eaa-PQENf7MO9rVtPAofUISx8ChnR7U\"",
-    "mtime": "2025-12-13T18:00:02.033Z",
-    "size": 73386,
+    "etag": "\"11fd0-38x4fmCXTcK1mlSh1Q9aQLxdOzI\"",
+    "mtime": "2025-12-13T19:54:33.161Z",
+    "size": 73680,
     "path": "index.mjs"
   },
   "/index.mjs.map": {
     "type": "application/json",
-    "etag": "\"455b2-cc6XX4bgqz6E6vfqlC2EtRidBSk\"",
-    "mtime": "2025-12-13T18:00:02.034Z",
-    "size": 284082,
+    "etag": "\"459ec-zq9egMENIA0pNWy1Z60B5KJwgT0\"",
+    "mtime": "2025-12-13T19:54:33.167Z",
+    "size": 285164,
     "path": "index.mjs.map"
   }
 };

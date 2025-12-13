@@ -17,6 +17,7 @@ import {
 import { Stock } from '../b2b/stock.entity'
 import * as fs from 'fs'
 import { join } from 'path'
+import { ObjectStorageService } from '../storage/object-storage.service'
 
 @Injectable()
 export class CatalogService implements OnModuleInit {
@@ -28,7 +29,8 @@ export class CatalogService implements OnModuleInit {
     @InjectRepository(ProductImage)
     private readonly imagesRepo: Repository<ProductImage>,
     @InjectRepository(Stock)
-    private readonly stockRepo: Repository<Stock>
+    private readonly stockRepo: Repository<Stock>,
+    private readonly objectStorage: ObjectStorageService,
   ) {}
 
   async onModuleInit() {
@@ -404,7 +406,7 @@ export class CatalogService implements OnModuleInit {
     return { ok: true }
   }
 
- async uploadProductImage(productId: number, file: any) {
+  async uploadProductImage(productId: number, file: any) {
     if (!file) {
       return { ok: false, message: 'Файл не получен' }
     }
@@ -412,11 +414,18 @@ export class CatalogService implements OnModuleInit {
     const product = await this.productsRepo.findOne({ where: { id: productId }, relations: ['images'] })
     if (!product) throw new NotFoundException('Product not found')
 
+    // Upload to Yandex Object Storage (S3-compatible). No local uploads are required.
+    const uploaded = await this.objectStorage.uploadPublic({
+      buffer: file.buffer,
+      mimetype: file.mimetype,
+      originalname: file.originalname,
+      prefix: 'products',
+    })
+
     const currentMax = Math.max(0, ...(product.images || []).map((i) => Number(i.sortOrder) || 0))
-    const url = `/uploads/products/${file.filename}`
     const image = this.imagesRepo.create({
       product,
-      url,
+      url: uploaded.url,
       sortOrder: currentMax + 1,
     })
     await this.imagesRepo.save(image)
