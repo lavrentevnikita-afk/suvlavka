@@ -12,6 +12,7 @@
     "baseUrl": "./",
     "incremental": true,
     "strict": true,
+    "typeRoots": ["./node_modules/@types", "./src/types"],
     "moduleResolution": "node",
     "esModuleInterop": true,
     "skipLibCheck": true
